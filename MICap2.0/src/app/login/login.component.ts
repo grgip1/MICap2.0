@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Midata } from 'Midata';
+import { MidataConnection } from '../../services/MidataConnection';
 
 @Component({
   selector: 'app-login',
@@ -9,13 +9,12 @@ import { Midata } from 'Midata';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router, private midata:Midata) {
-    this.midata = new Midata('https://test.midata.coop', 'MICap2.0', 'Bsc2018')
+  constructor(private router: Router, private midata:MidataConnection) {
+
    }
 
     login() {
-      this.midata.login('Lc2@test.ch', 'Lc12345678');
-      console.log(this.midata.authToken);
+      this.midata.login('lc2@test.ch', 'Lc12345678');
     }
 
   goToHome(){
