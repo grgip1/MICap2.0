@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes, RouterOutlet } from '@angular/router'
+import { RouterModule, Routes, RouterOutlet } from '@angular/router';
 
 import { AppRoutingModule, routingComponents } from './app-routing.modules';
 import { MidataConnection } from '../services/MidataConnection';

@@ -13,7 +13,7 @@ export class MidataConnection {
   }
 
   login(username, password) {
-    this._midata.login(username, password, "research");
+    this._midata.login(username, password, 'research');
     // this._midata.fetchFHIRConformanceStatement();
     console.log(this._midata.authToken);
 
@@ -21,19 +21,23 @@ export class MidataConnection {
 
   createfhir(bundle: JSON) {
 
-    var ressources = [];
-    for (var key in bundle) {
-      if (!bundle.hasOwnProperty(key) // skip prototype extensions
-        || !bundle[key].hasOwnProperty("ressource") //skip non account objects
-      ) continue;
+    const ressources = [];
+    for (const key in bundle) {
+
+      if ( !bundle.hasOwnProperty(key) // skip prototype extensions
+        || !bundle[key].hasOwnProperty('ressource') // skip non account objects
+      ) {
+        continue;
+      }
+
       ressources.push(bundle[key]);
 
       console.table(ressources);
     }
 
-    //for (let)
+    // for (let)
 
-  //var ressource = fromFhir();
+  // var ressource = fromFhir();
   }
 
 }
