@@ -13,8 +13,8 @@ export class LoginComponent implements OnInit {
 
    }
 
-    login() {
-      this.midata.login('phil.forscher@lc2.ch', 'MIDATA2017p!');
+    login(username: string, password: string) {
+      this.midata.login('lc2@test,ch', 'Lc12345678');
     }
 
   goToHome() {

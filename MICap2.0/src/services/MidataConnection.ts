@@ -12,24 +12,24 @@ export class MidataConnection {
     this.midata = new Midata('https://test.midata.coop', 'MICap2.0', 'Bsc2018');
   }
 
-  login(username, password) {
-    this.midata.login(username, password, 'research')
-      .then(() => {
-        this.midata.fetchFHIRConformanceStatement();})
-        .then((msg) => {
-          if (this.midata.authToken){
-          return true;
-          }else {
-            console.log(msg);
-          return msg;
-          }
-        })
-    console.log(this.midata.user.email);
+  login(username:string, password:string) {
+    this.midata.login(username, password, 'research');
+      // .then(() => {
+      //   this.midata.fetchFHIRConformanceStatement();})
+      //   .then((msg) => {
+      //     if (this.midata.authToken){
+      //     return true;
+      //     }else {
+      //       console.log(msg);
+      //     return msg;
+      //     }
+      //   })
+   // console.log(this.midata.user.email);
     // checking if login sucesfull
 
     // console.log(this._midata.authToken);
     // console.log(this.midata.search('Observation'));
-    // this.getData();
+     this.getData();
   }
 
   logout() {
@@ -46,10 +46,8 @@ export class MidataConnection {
     bundle.then((msg) => {
       for (const key in msg) {
         //console.log(msg[key]);
-        if (msg[key]._fhir.component != null) {
-          resources.push(msg[key]._fhir.component);
+          resources.push(msg[key]);
         }
-      }
     });
 
     console.log(resources);
