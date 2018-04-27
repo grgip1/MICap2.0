@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
     "core-js": "^2.4.1",
+    "hoek": "^5.0.3",
     "midata": "git+https://github.com/i4mi/midata.js.git",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.14"
