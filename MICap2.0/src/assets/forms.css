@@ -1,0 +1,15 @@
+/*Css for managing the form of login*/
+
+.ng-valid[required], .ng-valid.required  {
+  border: 1px solid   #42A948;
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-untouched:not(form) {
+  border: 1px solid  rgb(19, 110, 214); /*blue*/
+  border-left:5px solid rgb(19, 110, 214); /*blue*/
+}
+
+ .ng-touched:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}

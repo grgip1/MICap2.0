@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { RouterModule, Routes, RouterOutlet } from '@angular/router';
+import { HttpModule } from '@angular/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule, routingComponents } from './app-routing.modules';
 import { MidataConnection } from '../services/MidataConnection';
@@ -19,6 +21,9 @@ import { HomeComponent } from './home/home.component';
     BrowserModule,
     RouterModule,
     AppRoutingModule,
+    HttpModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     MidataConnection,
