@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MidataConnection } from '../../services/MidataConnection'
-import { Midata } from 'Midata';
 
 @Component({
   selector: 'app-home',
