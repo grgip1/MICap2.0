@@ -6,6 +6,8 @@ import { fromFhir } from 'Midata/dist/src/resources/registry';
 @Injectable()
 export class MidataConnection {
 
+  public errorOccured: boolean;
+  public errorMessage: string;
   private midata: Midata;
 
   constructor() {
@@ -13,9 +15,17 @@ export class MidataConnection {
   }
 
   login(username:string, password:string) {
-    this.midata.login(username, password, 'research');
-      // .then(() => {
-      //   this.midata.fetchFHIRConformanceStatement();})
+    this.midata.login(username, password, 'research')
+       .then(() => {
+         this.midata.fetchFHIRConformanceStatement();})
+       .catch((err) =>{/*Promise.reject(err) */
+        this.errorOccured = true;
+        var errmessage = JSON.parse(err.body);
+        this.errorMessage = errmessage.message;
+        console.log(errmessage);
+        console.log(errmessage.message);
+        console.log(err);
+      return errmessage});
       //   .then((msg) => {
       //     if (this.midata.authToken){
       //     return true;
@@ -29,7 +39,6 @@ export class MidataConnection {
 
     // console.log(this._midata.authToken);
     // console.log(this.midata.search('Observation'));
-     this.getData();
   }
 
   logout() {

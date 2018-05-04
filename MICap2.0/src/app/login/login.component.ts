@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
   loginCredent: FormGroup;
   username: FormControl;
   password: FormControl;
+  errorMessage: string;
 
   constructor(private router: Router, private midata: MidataConnection) {
 
@@ -39,11 +40,18 @@ export class LoginComponent implements OnInit {
     login() {
       if (this.username.valid && this.password.valid){
         this.midata.login(this.username.value, this.password.value);
+
+      }
+
+      if(this.midata.errorOccured){
+        this.errorMessage = this.midata.errorMessage;
+      } else{
+        //this.router.navigate(['home']);
       }
     }
 
   goToHome() {
-    this.router.navigate(['home']);
+
   }
 
 
