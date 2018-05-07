@@ -14,31 +14,13 @@ export class MidataConnection {
     this.midata = new Midata('https://test.midata.coop', 'MICap2.0', 'Bsc2018');
   }
 
-  login(username:string, password:string) {
+  login(username: string, password: string) {
     this.midata.login(username, password, 'research')
-       .then(() => {
-         this.midata.fetchFHIRConformanceStatement();})
-       .catch((err) =>{/*Promise.reject(err) */
+       .catch((err) => {
         this.errorOccured = true;
-        var errmessage = JSON.parse(err.body);
+        const errmessage = JSON.parse(err.body);
         this.errorMessage = errmessage.message;
-        console.log(errmessage);
-        console.log(errmessage.message);
-        console.log(err);
-      return errmessage});
-      //   .then((msg) => {
-      //     if (this.midata.authToken){
-      //     return true;
-      //     }else {
-      //       console.log(msg);
-      //     return msg;
-      //     }
-      //   })
-   // console.log(this.midata.user.email);
-    // checking if login sucesfull
-
-    // console.log(this._midata.authToken);
-    // console.log(this.midata.search('Observation'));
+        console.log(errmessage.message); });
   }
 
   logout() {
@@ -46,10 +28,10 @@ export class MidataConnection {
   }
 
 
-  //Testing wie man an die daten vom Benutzer kommt
+  // Testing wie man an die daten vom Benutzer kommt
   /////////////////////////////////////////////////////////////
   getData() {
-    const bundle = this.midata.search('Observation')
+    const bundle = this.midata.search('Observation');
     const resources = [];
 
     bundle.then((msg) => {
