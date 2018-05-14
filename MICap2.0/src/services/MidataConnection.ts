@@ -9,7 +9,7 @@ export class MidataConnection {
   public errorOccured: boolean;
   public errorMessage: string;
   private midata: Midata;
-  private allData: any;
+  public allData: any;
   public user: string;
   public dataCount: number;
 
@@ -18,6 +18,7 @@ export class MidataConnection {
   }
 
   login(username: string, password: string) {
+    this.errorOccured = false;
     this.midata.login(username, password, 'research')
       .catch((err) => {
         this.errorOccured = true;
@@ -26,6 +27,7 @@ export class MidataConnection {
         console.log(errmessage.message);
       });
     this.user = this.midata.user.name;
+    console.log(this.user);
     this.allData = this.midata.search('Observation');
   }
 
@@ -38,29 +40,57 @@ export class MidataConnection {
   }
 
   getUser() {
-    return this.midata.user;
+    return this.midata.user.name;
   }
 
   // Testing wie man an die daten vom Benutzer kommt
   /////////////////////////////////////////////////////////////
-  private getData() {
-    this.allData = this.midata.search('Observation');
-    const bundle = this.midata.search('Observation');
-    const resources = [];
+  public getData() {
+    const bundle = this.allData;
+    const resources: any  = [];
+    const components: any = [];
+    const values: any = [];
+
+
+    // lädt alle daten als resource
+    // bundle.then((msg) => {
+    //   for (const key in msg) {
+    //     resources.push(msg[key]);
+    //   }
+    // });
+
+    // aus den daten sollen nur die componente geladen werden
+     bundle.then((msg) => {
+       for (const key in msg) {
+         if (msg[key]._fhir.component != null)
+         resources.push(msg[key]._fhir.component);
+
+       }
+     });
 
     bundle.then((msg) => {
       for (const key in msg) {
-        //console.log(msg[key]);
-        resources.push(msg[key]);
+        components.push(resources[key].length);
+
+        for(let i in msg[key]._fhir.component) {
+          //values.push(msg[key]._fhir.component[i].valueQuantity.value)
+          //resources.push(msg[key]._fhir.component[i].code.coding[0].display, msg[key]._fhir.component[i].valueQuantity.value)
+          // console.log(msg[key]._fhir.component[i].code.coding[0].display);
+          // console.log(msg[key]._fhir.component[i].valueQuantity.value);
+          values.push([msg[key]._fhir.component[i].code.coding[0].display, msg[key]._fhir.component[i].valueQuantity.value]);
+        }
+
       }
     });
 
-    console.log(resources);
+    console.log(components);
+    console.log(values);
+    return values;
   }
   ////////////////////////////////////////////////////////////////////////////////
 
 
-  //Noch aus LC2 --> nicht sicher ob noch nützlich
+  // Noch aus LC2 --> nicht sicher ob noch nützlich
   ////////////////////////////////////////////////////////////////////////////////
   createfhir(bundle: JSON) {
 
