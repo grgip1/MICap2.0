@@ -9,13 +9,20 @@ import { MidataConnection } from '../../services/MidataConnection';
 })
 export class HomeComponent implements OnInit {
 
+  REDCapToken: any; //TODO: herausfinden ob nur nurmerisch
+  midataCount: number; // Anzahl ausgelesene Daten
+  REDCapStudy: any; //TODO: wird auch der Name der Studie ausgegeben?
+
   constructor(private router: Router, private midata: MidataConnection) { }
 
   ngOnInit() {
-    this.midata.getData();
+    console.log(this.midata.getDataCount);
+    this.midata.getDataCount;
+
   }
 
-  goToLogin() {
+  logout() {
+    this.midata.logout();
     this.router.navigate(['login']);
   }
 

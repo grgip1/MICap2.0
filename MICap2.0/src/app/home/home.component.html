@@ -1,4 +1,7 @@
-<p>
-  home works!
-</p>
-<button (click)="goToLogin();">To Login</button>
+<button id="logout" (click)="logout()">Abmelden</button>
+<label id="userinfo">Sie sind angemeldet als {{user}}</label>
+<div>
+  <label>REDCap-API-TOKEN: {{REDCapToken}}</label>
+  <label>Anzahl Daten aus MIDATA: {{midataCount}}</label>
+</div>
+<button>In die {{REDCapStudy}} importieren</button>

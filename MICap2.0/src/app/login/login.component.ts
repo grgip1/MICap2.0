@@ -46,19 +46,18 @@ export class LoginComponent implements OnInit {
           this.errorOccured = true;
           const errmessage = JSON.parse(err.body);
           this.errorMessage = errmessage.message;
-          console.log(errmessage.message, this.errorOccured);
-        })
-        .then(() => {
-          console.log(this.errorMessage);
-          if (this.errorOccured) {
-            location.reload();
-            console.log('error coccured');
-          } else {
-            console.log('error not occured');
-             this.errorOccured = false;
-             this.router.navigate(['home']);
-          }
+          console.log(this.errorMessage, this.errorOccured);
         });
+      console.log(this.errorMessage);
+      if (this.errorOccured) {
+        //location.reload();
+        console.log('error coccured');
+      } else {
+        console.log('error not occured');
+        this.errorOccured = false;
+        this.router.navigate(['home']);
+      }
+
     }
   }
 }
