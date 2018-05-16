@@ -4,9 +4,11 @@
   <p>REDCap-API-TOKEN: {{REDCapToken}}</p>
   <p>Anzahl Daten aus MIDATA: {{midataCount}}</p>
 </div>
-<button>In die {{REDCapStudy}} importieren</button>
-<ul>
-  <li *ngFor="let data of datas">
-    {{data}}
-  </li>
-</ul>
+<button (click)="arrayTest()">In die {{REDCapStudy}} importieren</button>
+<table>
+  <ng-container *ngFor="let entry of datas; let i = index">
+    <ng-container *ngFor="let value of entry; let j = index">
+      <p>{{value}}</p>
+    </ng-container>
+  </ng-container>
+</table>

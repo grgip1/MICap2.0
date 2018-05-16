@@ -43,9 +43,10 @@ export class LoginComponent implements OnInit {
       this.errorOccured = false;
       this.midata.login(this.username.value, this.password.value);
       this.user = this.midata.getUser();
-      console.log(this.errorMessage);
+
       if (this.midata.errorOccured) {
         // location.reload();
+        console.log(this.errorMessage);
         console.log('error coccured');
       } else {
         console.log('error not occured');

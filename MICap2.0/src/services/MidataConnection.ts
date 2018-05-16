@@ -28,7 +28,7 @@ export class MidataConnection {
       });
     this.user = this.midata.user.name;
     console.log(this.user);
-    this.allData = this.midata.search('Observation');
+    this.allData = this.midata.search(/*'QuestionnaireResponse'*/'Observation');
   }
 
   logout() {
@@ -62,8 +62,9 @@ export class MidataConnection {
     // aus den daten sollen nur die componente geladen werden
      bundle.then((msg) => {
        for (const key in msg) {
-         if (msg[key]._fhir.component != null)
-         resources.push(msg[key]._fhir.component);
+         //if(msg[key]._fhir.code.coding[0].code == 'MSCogTestSD'){
+         resources.push(msg[key]);
+         //}
 
        }
      });
@@ -73,8 +74,8 @@ export class MidataConnection {
         components.push(resources[key].length);
 
         for(let i in msg[key]._fhir.component) {
-          //values.push(msg[key]._fhir.component[i].valueQuantity.value)
-          //resources.push(msg[key]._fhir.component[i].code.coding[0].display, msg[key]._fhir.component[i].valueQuantity.value)
+          // values.push(msg[key]._fhir.component[i].valueQuantity.value)
+          // resources.push(msg[key]._fhir.component[i].code.coding[0].display, msg[key]._fhir.component[i].valueQuantity.value)
           // console.log(msg[key]._fhir.component[i].code.coding[0].display);
           // console.log(msg[key]._fhir.component[i].valueQuantity.value);
           values.push([msg[key]._fhir.component[i].code.coding[0].display, msg[key]._fhir.component[i].valueQuantity.value]);
@@ -82,7 +83,7 @@ export class MidataConnection {
 
       }
     });
-
+    console.log(resources);
     console.log(components);
     console.log(values);
     return values;
