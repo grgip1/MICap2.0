@@ -16,12 +16,12 @@ export class HomeComponent implements OnInit {
   user: any;
   datas = [];
 
-  constructor(private router: Router, private midata: MidataConnection, private http: HttpModule) { }
+  constructor(private router: Router, private midata: MidataConnection, private http: HttpModule) {
+   }
 
   ngOnInit() {
     this.setMetadata();
     console.log(this.datas);
-    // this.http
   }
 
   private setMetadata() {
