@@ -25,7 +25,6 @@ export class HomeComponent implements OnInit {
   }
 
   private setMetadata() {
-    this.datas = this.midata.getData();
     this.user = this.midata.user;
     this.midataCount = this.datas.length;
   }

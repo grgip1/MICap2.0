@@ -13,10 +13,18 @@
       <p *ngIf="password.errors.required">Passwort muss eingeben werden!</p>
     </div>
   </div>
+  <div class="form-group">
+    <label for="device">Device Code: </label>
+    <input type="text" class="form-control" formControlName="device" required>
+    <div *ngIf="device.errors && (device.dirty || device.touched)">
+      <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
+    </div>
+  </div>
   <button type="submit" calss="btn btn-success">Anmelden</button>
-  <div  *ngIf="errorOccured">
+  <div  *ngIf="errorOccured" ngOnChanges>
     {{errorMessage}}
     <button class="info-button">?</button>
   </div>
-  <button (click)="toHome()">home</button>
+
 </form>
+<button (click)="toHome()">home</button>
