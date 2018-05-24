@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   private device: FormControl;
   private errorMessage: string;
   private errorOccured: boolean;
-  private authURL = 'https://test.midata.coop/v1/auth';
+
   private appName = 'MICap2.0';
   private appSecret = 'Bsc2018';
 
@@ -48,6 +48,11 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+
+    if (this.errorOccured) {
+      this.errorOccured = false;
+    }
+
     let authRequest: AuthRequest = {
       username: this.username.value,
       password: this.password.value,
@@ -57,12 +62,12 @@ export class LoginComponent implements OnInit {
       role: 'research'
     };
 
-    this.http.post(this.authURL, authRequest).toPromise()
+    this.http.post(this.midata.authURL, authRequest).toPromise()
       .then(
         (res) => {
           const bundle = JSON.parse(res.text());
           this.midata.setLogin(bundle.authToken, bundle.refreshToken, bundle.owner);
-          console.log(this.midata.getData());
+          this.midata._authToken = bundle.authToken;
           localStorage.setItem('authToken', bundle.authToken);
         },
         error => {
@@ -75,26 +80,13 @@ export class LoginComponent implements OnInit {
             this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte gültige E-Mail-Adresse eingeben!';
           }
           localStorage.setItem('authToken', this.errorMessage);
-          console.log(this.errorMessage);
         },
     )
-    .then(() => {
-      if (!this.errorOccured) {
-        this.router.navigate(['home']);
-      }
-    })
-  }
-
-  toHome() {
-    let headers = new Headers();
-    headers.append('Authorization', 'Bearer ' + localStorage.getItem('authToken'));
-    /* headers.append('Connection', 'keep-alive');
-     headers.append('Host', 'test.midata.coop'); */
-
-    let options = new RequestOptions({ headers: headers });
-
-    this.http.get('https://test.midata.coop/fhir/Patient/_search', options).subscribe(res => console.log(JSON.parse(res.text())));
-
+      .then(() => {
+        if (!this.errorOccured) {
+          this.router.navigate(['home']);
+        }
+      })
   }
 }
 

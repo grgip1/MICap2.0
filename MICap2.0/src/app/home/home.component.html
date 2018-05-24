@@ -1,14 +1,12 @@
 <button id="logout" (click)="logout()">Abmelden</button>
-<label id="userinfo">Sie sind angemeldet als {{user}}</label>
-<div>
-  <p>REDCap-API-TOKEN: {{REDCapToken}}</p>
-  <p>Anzahl Daten aus MIDATA: {{midataCount}}</p>
-</div>
-<button (click)="arrayTest()">In die {{REDCapStudy}} importieren</button>
-<table>
-  <ng-container *ngFor="let entry of datas; let i = index">
-    <ng-container *ngFor="let value of entry; let j = index">
-      <p>{{value}}</p>
-    </ng-container>
-  </ng-container>
-</table>
+<p id="userinfo">Sie sind angemeldet als {{user}}</p>
+<p>REDCap-API-TOKEN: {{REDCapToken}}</p>
+<form style="width: 250px;">
+  <div>
+    <label>REDCap-API-Token eingeben: </label>
+    <input type="text"  [(ngModel)]='token' [ngModelOptions]="{standalone: true}">
+  </div>
+  <button (click)="save(token)" calss="btn btn-success">Speichern</button>
+</form>
+<p>Anzahl der Patienten in der MIDATA-Studie: {{patients}}</p>
+<button (click)="arrayTest()">Nach REDCap exportieren</button>
