@@ -18,8 +18,9 @@ export class HomeComponent implements OnInit {
   midataCount: any; // Anzahl ausgelesene Daten
   REDCapStudy: any; // TODO: wird auch der Name der Studie ausgegeben?
   user: any;
-  datas = [];
+  dataEntry: number;
   patients: number;
+  options: RequestOptions;
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http) {
   }
@@ -32,9 +33,9 @@ export class HomeComponent implements OnInit {
 
     let headers = new Headers();
     headers.append('Authorization', 'Bearer ' + localStorage.getItem('authToken'));
-    let options = new RequestOptions({ headers: headers });
+    this.options = new RequestOptions({ headers: headers });
 
-    this.http.get('https://test.midata.coop/fhir/Patient/_search', options).toPromise()
+    this.http.get(this.midata.patientRequest, this.options).toPromise()
       .then(res => {
         const bundle = JSON.parse(res.text());
         console.log(bundle);
@@ -50,13 +51,8 @@ export class HomeComponent implements OnInit {
 
   createForm() {
     this.redcapToken = new FormGroup({
-      redcapAPI : this.redcapAPI
+      redcapAPI: this.redcapAPI
     });
-  }
-
-  private setMetadata() {
-    this.user = this.midata.user;
-    this.midataCount = this.datas.length;
   }
 
   logout() {
@@ -64,11 +60,35 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
-  save(token: string){
-console.log(token);
+  save(token: string) {
+    console.log(token);
     this.REDCapToken = token;
 
   }
 
+  pushToRedCap() {
+
+    let bundle: any;
+
+    this.http.get(this.midata.observationRequest, this.options).toPromise()
+      .then(res => {
+        bundle = JSON.parse(res.text());
+        console.log(bundle);
+        this.dataEntry = bundle.entry.length;
+      }).then(() => {
+        for (let key in bundle.entry) {
+          //console.log(bundle.entry[key].resource.code.coding[0].code);
+          if (bundle.entry[key].resource.code.coding[0].code === "MSCogTestLab") {
+            for (let comp in bundle.entry[key].resource.component) {
+              console.log(bundle.entry[key].resource.component[comp].code.coding[0].code);
+              console.log(bundle.entry[key].resource.component[comp].valueQuantity.value);
+            }
+            // console.log(bundle.entry.component);
+            // console.log(bundle.entry[key]);
+          }
+        }
+      })
+
+  }
 
 }
