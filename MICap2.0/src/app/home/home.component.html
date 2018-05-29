@@ -1,6 +1,7 @@
 <button id="logout" (click)="logout()">Abmelden</button>
-<p id="userinfo">Sie sind angemeldet als {{user}}</p>
+<p id="userinfo">Sie sind angemeldet als {{User}}</p>
 <p>REDCap-API-TOKEN: {{REDCapToken}}</p>
+<P style="color: red;">Bitte REDCapToken eingeben!</P>
 <form style="width: 250px;">
   <div>
     <label>REDCap-API-Token eingeben: </label>
@@ -8,6 +9,6 @@
   </div>
   <button (click)="save(token)" calss="btn btn-success">Speichern</button>
 </form>
-<p>Anzahl der Patienten in der MIDATA-Studie: {{patients}}</p>
-<p>Anzahl der Dateneinträge: {{dataEntry}}</p>
+<p>Anzahl der Patienten in der MIDATA-Studie: {{Patients}}</p>
+<p>Anzahl der Dateneinträge: {{DataEntry}}</p>
 <button (click)="pushToRedCap()">Nach REDCap exportieren</button>

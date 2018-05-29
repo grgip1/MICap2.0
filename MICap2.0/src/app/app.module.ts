@@ -26,6 +26,7 @@ import { HomeComponent } from './home/home.component';
     ReactiveFormsModule,
   ],
   providers: [
+    AppComponent,
     MidataConnection,
   ],
   bootstrap: [AppComponent]

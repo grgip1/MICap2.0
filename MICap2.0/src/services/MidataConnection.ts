@@ -11,6 +11,7 @@ export class MidataConnection {
   public authURL = 'https://test.midata.coop/v1/auth';
   public patientRequest = 'https://test.midata.coop/fhir/Patient/_search'
   public observationRequest = 'https://test.midata.coop/fhir/Observation/_search'
+  public questionnaireRequest = 'https://test.midata.coop/fhir/QuestionnaireResponse/_search'
   public appName = 'MICap2.0';
   public appSecret = 'Bsc2018';
   public authorization = 'Bearer ' + this._authToken;
