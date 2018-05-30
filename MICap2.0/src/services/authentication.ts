@@ -1,28 +1,13 @@
 import {URLSearchParams} from "@angular/http";
 
 /**
- * Authentication request payload.
+ * Authentifikationsparameter.
  */
 export interface AuthRequest {
-  appname: string;  // internal name of the application
-  secret: string;   // the secret key that has been chosen on the development portal
-  username: string; // the email of the user
-  password: string; // the user's password
-  role: string; // the role of the user (when using micap 2.0 the role must be research)
-  device: string;   // device code to which study the app is linked
+  appname: string;  // Interner Name der Applikation.
+  secret: string;   // Das Secret weclhes beim Plugin erstellen gesetzt wurde.
+  username: string; // E-Mail vom Nutzer
+  password: string; // Passwort vom Nutzer
+  role: string;     // Die Rolle des Nutzers (um MICap 2.0 zu nutzen muss es ein Forscherkonto sein)
+  device: string;   // Device-Code zu welcher Studie die Applikation verknüpft ist.
 }
-
-/**
- * Recored request payload
- */
-export interface GetRecordRequest {
-  authToken: string;          // the token from the authentication request
-  resourceType: ResourceType; // what ressourceType to get
-}
-
-/**
- * Resource type which can be selected
- */
-export type ResourceType =
-'Patient' |     //resource type patient
-'Observation';  //resource type observation

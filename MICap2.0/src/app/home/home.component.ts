@@ -186,7 +186,7 @@ ngOnInit() {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen
-              this.http.post('http://localhost/dashboard/micap/redcap.labyrinth.php', data).subscribe(res => console.log(res));
+              //this.http.post('http://localhost/dashboard/micap/redcap.labyrinth.php', data).subscribe(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -244,7 +244,7 @@ ngOnInit() {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              this.http.post('http://localhost/dashboard/micap/redcap.motpoint.php', data).subscribe(res => console.log(res));
+              //this.http.post('http://localhost/dashboard/micap/redcap.motpoint.php', data).subscribe(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -332,7 +332,7 @@ ngOnInit() {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              this.http.post('http://localhost/dashboard/micap/redcap.motline.php', data).subscribe(res => console.log(res));
+              //this.http.post('http://localhost/dashboard/micap/redcap.motline.php', data).subscribe(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -420,7 +420,7 @@ ngOnInit() {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              this.http.post('http://localhost/dashboard/micap/redcap.digitsymb.php', data).subscribe(res => console.log(res));
+              //this.http.post('http://localhost/dashboard/micap/redcap.digitsymb.php', data).subscribe(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           }
@@ -683,15 +683,15 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                    // console.log(mainQuestionnaireInstance);
-                    // console.log(data1);
+                     console.log(mainQuestionnaireInstance);
+                     console.log(data1);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen.
                     this.http.post('http://localhost/dashboard/micap/redcap.mainsymptoms.php', data1).subscribe(res => console.log(res));
                   } else if (bundle.entry[key].resource.item[item].linkId === '2') {
 
-                     // Die MSIS-Instrumentinstanz wird inkrementiert.
+                    // Die MSIS-Instrumentinstanz wird inkrementiert.
                     msisQuestionnaireInstance++;
 
                     // Daten für den Übertrag werden zusammengefasst.
@@ -735,8 +735,8 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                    // console.log(msisQuestionnaireInstance);
-                    // console.log(data2);
+                     console.log(msisQuestionnaireInstance);
+                     console.log(data2);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!
@@ -767,8 +767,8 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                    // console.log(fatigueQuestionnaireInstance);
-                    // console.log(data3);
+                     console.log(fatigueQuestionnaireInstance);
+                     console.log(data3);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MidataConnection } from '../../services/MidataConnection';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { AuthRequest, GetRecordRequest, } from '../../services/authentication';
+import { AuthRequest } from '../../services/authentication';
 
 import { Http, RequestOptions, Headers } from '@angular/http';
 
@@ -13,33 +13,38 @@ import { Http, RequestOptions, Headers } from '@angular/http';
   styles: []
 })
 
+/**
+ * Diese Klasse verbindet Meldet sich bei MIDATA mit den erhaltenen Nutzerinformationen an.
+ */
 export class LoginComponent implements OnInit {
 
-  private loginCredent: FormGroup;
-  private username: FormControl;
-  private password: FormControl;
-  private device: FormControl;
-  private errorMessage: string;
-  private errorOccured: boolean;
+  private loginCredent: FormGroup;  // Form-Name für das Login-Submit
+  private username: FormControl;    // Form-Controller welcher den Benutzername beinhaltet.
+  private password: FormControl;    // Form-Controller welcher das Passwort beinhaltet.
+  private device: FormControl;      // Form-Controller welcher den Device-Code beinhaltet.
+  private errorMessage: string;     // Fehlermeldung welche beim Login auftritt.
+  private errorOccured: boolean;    // Indikator dass ein Fehler aufgetrten ist.
 
-  private appName = 'MICap2.0';
-  private appSecret = 'Bsc2018';
+  private appName = 'MICap2.0';     // Interner Applikationsname.
+  private appSecret = 'Bsc2018';    // Das Secret weclhes beim Plugin erstellen gesetzt wurde.
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http) {
   }
 
+  // Beim laden der Komponente werden die Form-Controller und die Form-Gruppe erstellt.
   ngOnInit() {
-    console.log(localStorage.getItem('authToken'));
     this.createFormControls();
     this.createForm();
   }
 
+  // Erstellt die Form-Controller. Dabiei ist ein Validator notwendig
   createFormControls() {
     this.username = new FormControl('', Validators.required);
     this.password = new FormControl('', Validators.required);
     this.device = new FormControl('', Validators.required);
   }
 
+  // Erstellt eine From-Gruppe und setzt die Variablen ein.
   createForm() {
     this.loginCredent = new FormGroup({
       username: this.username,
@@ -48,12 +53,16 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  // Meldet sich mit dem vom Nutzer eingegebenen Benutzernamen und Passwort bei MIDATA an.
   login() {
 
-    if (this.errorOccured) {
-      this.errorOccured = false;
-    }
+    /**
+     * Setzt den Fehlerindikatr auf false, da eine Anmeldung versucht wird.
+     * Ist nötig fals das Login fehlgeschlagen hat und es erneut versucht wird.
+     */
+    this.errorOccured = false;
 
+    // Notwendige Anmeldeparameter welche mit dem http.post mitgegeben werden.
     let authRequest: AuthRequest = {
       username: this.username.value,
       password: this.password.value,
@@ -63,12 +72,23 @@ export class LoginComponent implements OnInit {
       role: 'research'
     };
 
+    /**
+     * Meldet sich mit dem vom Nuter angegebenen Anmeldeparameter an.
+     * Im gleichen Schritt wird der Authentifikations-Token,
+     * Refresh-Token und der Nuter im Service MidataConnection gespeichert.
+     * Falls sich ein Fehler auftaucht wird dieser abgefangen mit dem error.
+     */
     this.http.post(this.midata.authURL, authRequest).toPromise()
       .then(
         (res) => {
           const bundle = JSON.parse(res.text());
           this.midata.setLogin(bundle.authToken, bundle.refreshToken, bundle.owner);
           this.midata._authToken = bundle.authToken;
+
+          /**
+           * Wird ebenfalls im LocalStorage abgelegt, weil sobald die Home-Komponente geladen wird
+           * braucht es den Authentifikations-Token um die Anzahl Patienten in der Studie auszulesen.
+           */
           localStorage.setItem('authToken', bundle.authToken);
         },
         error => {
@@ -83,6 +103,7 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('authToken', this.errorMessage);
         },
     )
+      // Fals kein fehler auftritt, wird der Nutzer zu der HomePage weitergeleitet.
       .then(() => {
         if (!this.errorOccured) {
           this.router.navigate(['home']);
