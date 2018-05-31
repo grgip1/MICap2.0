@@ -1,5 +1,4 @@
 /*Css for managing the form of login*/
-
 .ng-valid[required], .ng-valid.required  {
   border: 1px solid   #42A948;
   border-left: 5px solid #42A948; /* green */

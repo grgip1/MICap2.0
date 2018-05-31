@@ -11,8 +11,9 @@ export class MidataConnection {
   public patientRequest = 'https://test.midata.coop/fhir/Patient/_search' // URL welcher aufgerufen wird, um nach Ressourcen vom Typ Patient zu suchen.
   public observationRequest = 'https://test.midata.coop/fhir/Observation/_search'// URL welcher aufgerufen wird, um nach Ressourcen vom Typ Observation zu suchen.
   public questionnaireRequest = 'https://test.midata.coop/fhir/QuestionnaireResponse/_search' // URL welcher aufgerufen wird, um nach Ressourcen vom Typ QuestionResponse zu suchen.
-  public appName = 'MICap2.0'; // TODO: wird es noch gebraucht??
-  public appSecret = 'Bsc2018'; // TODO: wird es noch gebraucht??
+  public REDCapExportAppName = 'MICap2.0'; // Name vom MICap2.0-Plugins
+  public AppSecret = 'Bsc2018'; // AppSecret beider Plugins
+  public FeedbackAppName = 'Feedback'; // Name des Feedback-Plugins
   public authorization = 'Bearer ' + this._authToken; // TODO: wird es noch gebraucht??
 
   // Setzt Anmeldedten.

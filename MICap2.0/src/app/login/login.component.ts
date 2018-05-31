@@ -6,7 +6,6 @@ import { AuthRequest } from '../../services/authentication';
 
 import { Http, RequestOptions, Headers } from '@angular/http';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -25,8 +24,11 @@ export class LoginComponent implements OnInit {
   private errorMessage: string;     // Fehlermeldung welche beim Login auftritt.
   private errorOccured: boolean;    // Indikator dass ein Fehler aufgetrten ist.
 
-  private appName = 'MICap2.0';     // Interner Applikationsname.
-  private appSecret = 'Bsc2018';    // Das Secret weclhes beim Plugin erstellen gesetzt wurde.
+  private selectLogin = [
+    'Rückmeldung holen',
+    'Daten nach REDCap exportieren'
+  ];
+  private export: boolean = false;
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http) {
   }
@@ -35,6 +37,18 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.createFormControls();
     this.createForm();
+    console.log(this.selectLogin);
+  }
+
+  selectChangeHandler(event: any) {
+    if (event.target.value === this.selectLogin[1]) {
+      this.export = true;
+    } else {
+      this.export = false;
+    }
+    this.errorOccured = false;
+    this.errorMessage = undefined;
+    console.log(this.export);
   }
 
   // Erstellt die Form-Controller. Dabiei ist ein Validator notwendig
@@ -66,8 +80,8 @@ export class LoginComponent implements OnInit {
     let authRequest: AuthRequest = {
       username: this.username.value,
       password: this.password.value,
-      appname: this.appName,
-      secret: this.appSecret,
+      appname: this.midata.REDCapExportAppName,
+      secret: this.midata.AppSecret,
       device: this.device.value,
       role: 'research'
     };
@@ -84,12 +98,6 @@ export class LoginComponent implements OnInit {
           const bundle = JSON.parse(res.text());
           this.midata.setLogin(bundle.authToken, bundle.refreshToken, bundle.owner);
           this.midata._authToken = bundle.authToken;
-
-          /**
-           * Wird ebenfalls im LocalStorage abgelegt, weil sobald die Home-Komponente geladen wird
-           * braucht es den Authentifikations-Token um die Anzahl Patienten in der Studie auszulesen.
-           */
-          localStorage.setItem('authToken', bundle.authToken);
         },
         error => {
           this.errorOccured = true;
@@ -106,9 +114,12 @@ export class LoginComponent implements OnInit {
       // Fals kein fehler auftritt, wird der Nutzer zu der HomePage weitergeleitet.
       .then(() => {
         if (!this.errorOccured) {
-          this.router.navigate(['home']);
+          if (this.export) {
+            this.router.navigate(['home']);
+          } else {
+            this.router.navigate(['feedback']);
+          }
         }
       })
   }
 }
-

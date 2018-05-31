@@ -1,5 +1,9 @@
-<form [formGroup]="loginCredent" style="width: 250px; margin-left: 35%;" (ngSubmit)="login()">
-  <div class="form-group">
+<form [formGroup]="loginCredent" style="width: 280px; margin-left: 38%; margin-top:30px;" (ngSubmit)="login()">
+  <label>Bitte Aktion auswählen</label>
+  <select (change)="selectChangeHandler($event)" class="form-control">
+    <option *ngFor="let item of selectLogin">{{item}}</option>
+  </select>
+  <div class="form-group" style="margin-top: 10px">
     <label for="username">Benutzername</label>
     <input type="text" class="form-control" formControlName="username" required>
     <div *ngIf="username.errors && (username.dirty || username.touched)">
@@ -21,8 +25,14 @@
     </div>
   </div>
   <button type="submit" calss="btn btn-success">Anmelden</button>
-  <div  *ngIf="errorOccured" ngOnChanges>
-    {{errorMessage}}
-    <button class="info-button">?</button>
-  </div>
 </form>
+<div style="width: 380px; margin-left: 36%; margin-top: 20px;">
+  <div *ngIf="errorOccured" style="color: red; font: bold; margin: 20px">
+    {{errorMessage}}
+  </div>
+  <div>
+    <p *ngIf="export">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten Pseudonymisiert sehen kann!</p>
+    <p *ngIf="!export">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten nicht Pseudonymisiert sehen kann!</p>
+  <button class="info-button">?</button>
+  </div>
+</div>

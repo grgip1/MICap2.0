@@ -35,12 +35,17 @@ export class HomeComponent implements OnInit {
  * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
  */
 ngOnInit() {
+  console.log(this.midata._authToken);
+  if(this.midata._authToken == undefined){
+    this.router.navigate(['login']);
+  }
+
     /**
      * Der Header mit dem authenticate-token wird erstellt.
      * Zu beachten ist, dass vor authenticate-token Bearer sein muss sonst funktioniert das authenticate nicht.
      */
     let headers = new Headers();
-    headers.append('Authorization', 'Bearer ' + localStorage.getItem('authToken'));
+    headers.append('Authorization', 'Bearer ' + this.midata._authToken);
     this.Options = new RequestOptions({ headers: headers });
 
     // Verbindung mit MIDATA und herauslesen wie viele Patienten in der Studie sind und der User wird gesetzt
@@ -51,13 +56,15 @@ ngOnInit() {
         console.log(bundle);
         this.Patients = bundle.total;
         this.User = this.midata._user;
+        console.log(this.midata._authToken);
       }
       );
   }
 
-  // Navigiert zur Login-Komponente und löscht alles im LocalStorage.
+  // Navigiert zur Login-Komponente und setzt die Token auf undefiniert.
   logout() {
-    localStorage.clear();
+    this.midata._authToken=undefined;
+    this.midata._refreshToken=undefined;
     this.router.navigate(['login']);
   }
 
