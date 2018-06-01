@@ -35,10 +35,10 @@ export class HomeComponent implements OnInit {
  * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
  */
 ngOnInit() {
-  console.log(this.midata._authToken);
-  if(this.midata._authToken == undefined){
-    this.router.navigate(['login']);
-  }
+  // console.log(this.midata._authToken);
+  // if(this.midata._authToken == undefined){
+  //   this.router.navigate(['login']);
+  // }
 
     /**
      * Der Header mit dem authenticate-token wird erstellt.
@@ -778,7 +778,6 @@ ngOnInit() {
                      console.log(data3);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-                    // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!
                     this.http.post('http://localhost/dashboard/micap/redcap.fatigue.php', data3).subscribe(res => console.log(res));
                   }
                 }

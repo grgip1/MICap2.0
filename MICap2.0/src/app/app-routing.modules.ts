@@ -3,11 +3,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full'},
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'feedback', component: FeedbackComponent}
 ];
 
 @NgModule({
@@ -17,4 +19,4 @@ const appRoutes: Routes = [
 
 export class AppRoutingModule { }
 
-export const routingComponents = [LoginComponent, HomeComponent];
+export const routingComponents = [LoginComponent, HomeComponent, FeedbackComponent];
