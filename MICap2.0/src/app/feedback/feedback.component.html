@@ -1,3 +1,17 @@
-<p>
-Lade Rückmeldungen...
-</p>
+<button id="logout" (click)="logout()">Abmelden</button>
+<p id="userinfo">Sie sind angemeldet als {{User}}</p>
+<p>REDCap-API-Token: {{REDCapToken}}</p>
+<div *ngIf="errorOccured" style="color: red; font: bold; margin: 20px">
+  {{errorMessage}}
+</div>
+<P *ngIf="showHint" style="color: red;" >Bitte REDCapToken eingeben!</P>
+<form style="width: 250px;">
+  <div>
+    <label>REDCap-API-Token eingeben: </label>
+    <input type="text"  [(ngModel)]='token' [ngModelOptions]="{standalone: true}">
+  </div>
+  <button (click)="save(token)" calss="btn btn-success">Speichern</button>
+</form>
+<p>Anzahl der Patienten in der MIDATA-Studie: {{Patients}}</p>
+<p>Anzahl der Dateneinträge: {{DataEntry}}</p>
+<button (click)=" getFeedback()">Feedback holen</button>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MidataConnection } from '../../services/MidataConnection';
-import { Http, RequestOptions, Headers} from '@angular/http';
+import { Http, RequestOptions, Headers } from '@angular/http';
+import { Observable } from 'rxjs/Rx';
 
 /**
  * Ermöglicht die Kommunikation zwischen MIDATA und REDCap.
@@ -26,19 +27,30 @@ export class HomeComponent implements OnInit {
   Options: RequestOptions;                                  // Autorisierung-Header für das Holen der Studiendaten.
   ErrorOccured: boolean;                                    // Zum erkennen ob Fehler aufgetaucht sind.
   ErrorMessage: string;                                     // Text der Fehlermeldung.
-
+  private errorOccured: boolean;                            // Indikator dass ein Fehler aufgetreten ist.
+  private errorMessage: string;                             // Fehlermeldung welche beim Login auftritt.
+  timer = Observable.interval(5000).subscribe(() => { this.pushToRedCap(); });
+  private OKsend: boolean = false;
+  private showHint: boolean;
+  private showAlert: boolean;
   constructor(private router: Router, private midata: MidataConnection, private http: Http) {
+    if (this.REDCapToken !== 'Keinen REDCap-API-Token angegeben') {
+      this.timer;
+    }
   }
 
-/**
- * Beim starten dieser Komponente wird eine Verbindung zu MIDATA hergestellt.
- * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
- */
-ngOnInit() {
-  // console.log(this.midata._authToken);
-  // if(this.midata._authToken == undefined){
-  //   this.router.navigate(['login']);
-  // }
+  /**
+   * Beim starten dieser Komponente wird eine Verbindung zu MIDATA hergestellt.
+   * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
+   */
+  ngOnInit() {
+    if (this.midata._authToken == undefined) {
+      this.router.navigate(['login']);
+    }
+
+    if (this.REDCapToken === 'Keinen REDCap-API-Token angegeben') {
+      this.showHint = true;
+    }
 
     /**
      * Der Header mit dem authenticate-token wird erstellt.
@@ -50,27 +62,38 @@ ngOnInit() {
 
     // Verbindung mit MIDATA und herauslesen wie viele Patienten in der Studie sind und der User wird gesetzt
     // TODO: user nicht schön muss sich noch ändern!!
-    this.http.get(this.midata.patientRequest, this.Options).toPromise()
+    this.http.get(this.midata.patientRequestURL, this.Options).toPromise()
       .then(res => {
         const bundle = JSON.parse(res.text());
-        console.log(bundle);
         this.Patients = bundle.total;
-        this.User = this.midata._user;
-        console.log(this.midata._authToken);
       }
-      );
+      ).then(() => {
+        // Verbindung mit MIDATA um den Namen des Nutzer zu holen.
+        this.http.get(this.midata.userNameURL + this.midata._user, this.Options).toPromise()
+          .then(res => {
+            const bundle = JSON.parse(res.text());
+            this.User = bundle.name[0].family + ' ' + bundle.name[0].given[0];
+          }
+          );
+      })
   }
 
   // Navigiert zur Login-Komponente und setzt die Token auf undefiniert.
   logout() {
-    this.midata._authToken=undefined;
-    this.midata._refreshToken=undefined;
+    this.timer.unsubscribe();
+    this.midata._authToken = undefined;
+    this.midata._refreshToken = undefined;
     this.router.navigate(['login']);
   }
 
   // Speichert den vom Benutzer eingegebenen REDCap-API-Token.
   save(token: string) {
-    console.log(token);
+    this.errorOccured = false;
+    if(token === undefined){
+      this.errorOccured = true;
+      this.errorMessage = 'Ungültiger REDCap-API-Token! Bitte eine gültigen REDCap-API-Token eingeben';
+    }
+    this.showHint = false;
     this.REDCapToken = token;
 
   }
@@ -81,8 +104,12 @@ ngOnInit() {
    */
   pushToRedCap() {
 
+    if(!this.OKsend){
+      this.showAlert = true;
+    }
+
     // Überprüft ob eine REDCap-API-Token eingegeben wurde.
-    if (this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '') {
+    if ((this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '') && this.OKsend) {
       this.ErrorOccured = true;
       this.ErrorMessage = 'Bitte REDCap-API-Token eingeben und den Datentransfer erneut starten!'
       return
@@ -94,7 +121,7 @@ ngOnInit() {
        * Die Methode toPromise() wird benötigt, um den Typ der Antwort des http von einem Observable in ein Promise umzuwandeln.
        * Die Antwort vom http wird in ein JSON umgewandelt und in die Variable bundle abgelegt.
        */
-      this.http.get(this.midata.observationRequest, this.Options).toPromise()
+      this.http.get(this.midata.observationRequestURL, this.Options).toPromise()
         .then(res => {
           bundle = JSON.parse(res.text());
           console.log(bundle);
@@ -438,19 +465,19 @@ ngOnInit() {
            * Die Fragebögen gehören nicht zum Ressourcentyp Observables.
            * Deswergen muss noch eine MIDATA-Abfrage gemacht jedoch auf den Ressourcentyp QuestionnaireResponse.
            */
-          this.http.get(this.midata.questionnaireRequest, this.Options).toPromise()
+          this.http.get(this.midata.questionnaireRequestURL, this.Options).toPromise()
             .then(res => {
 
               // Das Ressourcenbundle wird in das JSON-Format umgewandelt.
               let bundle = JSON.parse(res.text());
               console.log(bundle);
 
-             /**
-              * Um zu wissen wie viele Instrumentinstanzen angelegt werden müssen,
-              * wird die Instanz immer inkrementiert wenn die MIDATA-Studientteilnehmer-ID gleichbleibt.
-              * Ändert die MIDATA-Studientteilnehmer-ID, wird die Instrumentinstanzen auf 0 zurückgesetzt.
-              * Pro Fragebogen wird eine Instanzvariable geführt.
-              */
+              /**
+               * Um zu wissen wie viele Instrumentinstanzen angelegt werden müssen,
+               * wird die Instanz immer inkrementiert wenn die MIDATA-Studientteilnehmer-ID gleichbleibt.
+               * Ändert die MIDATA-Studientteilnehmer-ID, wird die Instrumentinstanzen auf 0 zurückgesetzt.
+               * Pro Fragebogen wird eine Instanzvariable geführt.
+               */
               let questionnaireParticipant: string;
               let mainQuestionnaireInstance: number = 0;
               let msisQuestionnaireInstance: number = 0;
@@ -483,7 +510,7 @@ ngOnInit() {
                   if (questionnaireParticipant !== Participant) {
                     mainQuestionnaireInstance = 0;
                     msisQuestionnaireInstance = 0;
-                    fatigueQuestionnaireInstance =0;
+                    fatigueQuestionnaireInstance = 0;
                   }
 
                   // Die MIDATA-Studientteilnehmer-ID wird für den Test gesetzt um zu wissen wann der MIDATA-Studientteilnehmer ändert.
@@ -690,8 +717,8 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                     console.log(mainQuestionnaireInstance);
-                     console.log(data1);
+                    console.log(mainQuestionnaireInstance);
+                    console.log(data1);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen.
@@ -742,8 +769,8 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                     console.log(msisQuestionnaireInstance);
-                     console.log(data2);
+                    console.log(msisQuestionnaireInstance);
+                    console.log(data2);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!
@@ -774,8 +801,8 @@ ngOnInit() {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                     console.log(fatigueQuestionnaireInstance);
-                     console.log(data3);
+                    console.log(fatigueQuestionnaireInstance);
+                    console.log(data3);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     this.http.post('http://localhost/dashboard/micap/redcap.fatigue.php', data3).subscribe(res => console.log(res));

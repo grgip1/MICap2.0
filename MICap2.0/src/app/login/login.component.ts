@@ -108,7 +108,6 @@ export class LoginComponent implements OnInit {
           } else {
             this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte gültige E-Mail-Adresse eingeben!';
           }
-          localStorage.setItem('authToken', this.errorMessage);
         },
     )
       // Fals kein fehler auftritt, wird der Nutzer zu der HomePage weitergeleitet.
