@@ -1,10 +1,12 @@
 import { DialogComponent } from './../dialog/dialog.component';
+import { Dialog2Component } from './../dialog2/dialog2.component';
 import { MatDialog } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MidataConnection } from '../../services/MidataConnection';
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
+import { NgProgress } from 'ngx-progressbar';
 
 /**
  * Ermöglicht die Kommunikation zwischen MIDATA und REDCap.
@@ -24,21 +26,23 @@ export class HomeComponent implements OnInit {
 
   REDCapToken: string = 'Keinen REDCap-API-Token angegeben' // REDCap-API-Token.
   User: any;                                                // Welcher User eingeloggt ist.
-  DataEntry: number;                                        // Anzahl vorhandener Daten in der Studie.
-  Patients: number;                                         // Anzahl Patienten in der Studie.
+  DataEntry: number = 0;                                        // Anzahl vorhandener Daten in der Studie.
+  Patients: number = 0;                                         // Anzahl Patienten in der Studie.
   Options: RequestOptions;                                  // Autorisierung-Header für das Holen der Studiendaten.
   ErrorOccured: boolean;                                    // Zum erkennen ob Fehler aufgetaucht sind.
   ErrorMessage: string;                                     // Text der Fehlermeldung.
   private errorOccured: boolean;                            // Indikator dass ein Fehler aufgetreten ist.
   private errorMessage: string;                             // Fehlermeldung welche beim Login auftritt.
-  //timer = Observable.interval(5000).subscribe(() => { this.pushToRedCap(); });
-  private OKsend: boolean = false;
+  //timer = Observable.interval(500).subscribe(() => { /*this.pushToRedCap();*/ if(this.exporting){this.progress.done;} });
   private showHint: boolean;
-  private showAlert: boolean;
-  constructor(private router: Router, private midata: MidataConnection, private http: Http, public dialog: MatDialog) {
-    // if (this.REDCapToken !== 'Keinen REDCap-API-Token angegeben') {
-    //   this.timer;
-    // }
+  private PatientNames: Array<String> = [];
+  private exportCount: number;
+  private progressingCount: number = 0;
+  private progressValue: number = 0;
+  private exporting: boolean = false;
+
+  constructor(private router: Router, private midata: MidataConnection, private http: Http, public dialog: MatDialog, private progress: NgProgress) {
+       //this.timer;
   }
   dialogResult: any;
 
@@ -47,9 +51,9 @@ export class HomeComponent implements OnInit {
    * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
    */
   ngOnInit() {
-    // if (this.midata._authToken == undefined) {
-    //   this.router.navigate(['login']);
-    // }
+    if (this.midata._authToken == undefined) {
+      this.router.navigate(['login']);
+    }
 
     if (this.REDCapToken === 'Keinen REDCap-API-Token angegeben') {
       this.showHint = true;
@@ -62,23 +66,34 @@ export class HomeComponent implements OnInit {
     let headers = new Headers();
     headers.append('Authorization', 'Bearer ' + this.midata._authToken);
     this.Options = new RequestOptions({ headers: headers });
+    this.Patients = this.midata.PatientNumber;
 
-    // Verbindung mit MIDATA und herauslesen wie viele Patienten in der Studie sind und der User wird gesetzt
-    // TODO: user nicht schön muss sich noch ändern!!
-    this.http.get(this.midata.patientRequestURL, this.Options).toPromise()
+    let numberObservations: number;
+    let numberQuestionnaires: number;
+
+    // Verbindung mit MIDATA um den Namen des Nutzer zu holen.
+    this.http.get(this.midata.userNameURL + this.midata._user, this.Options).toPromise()
       .then(res => {
         const bundle = JSON.parse(res.text());
-        this.Patients = bundle.total;
-      }
-      ).then(() => {
-        // Verbindung mit MIDATA um den Namen des Nutzer zu holen.
-        this.http.get(this.midata.userNameURL + this.midata._user, this.Options).toPromise()
+        this.User = bundle.name[0].family + ' ' + bundle.name[0].given[0];
+      });
+
+    // Verbindung mit MIDATA und herauslesen wie viele Testeresultate in der Studie sind.
+    this.http.get(this.midata.observationRequestURL, this.Options).toPromise()
+      .then(res => {
+        let bundle = JSON.parse(res.text());
+        numberObservations = bundle.entry.length;
+      }).then(() => {
+        this.http.get(this.midata.questionnaireRequestURL, this.Options).toPromise()
           .then(res => {
-            const bundle = JSON.parse(res.text());
-            this.User = bundle.name[0].family + ' ' + bundle.name[0].given[0];
-          }
-          );
-      })
+            let bundle = JSON.parse(res.text());
+            numberQuestionnaires = bundle.entry.length;
+          }).then(() => {
+            this.DataEntry = numberObservations + numberQuestionnaires;
+            this.exportCount = numberObservations + (numberQuestionnaires * 3)-2;// -2 weil noch 2 probe durchläufe sind in der Studie!!!!!!!!!!!!!!!!!!!!!!
+            console.log(this.exportCount);
+          });
+      });
   }
 
   // Navigiert zur Login-Komponente und setzt die Token auf undefiniert.
@@ -91,8 +106,9 @@ export class HomeComponent implements OnInit {
 
   // Speichert den vom Benutzer eingegebenen REDCap-API-Token.
   save(token: string) {
+    this.progress.done();
     this.errorOccured = false;
-    if(token === undefined){
+    if (token === undefined) {
       this.errorOccured = true;
       this.errorMessage = 'Ungültiger REDCap-API-Token! Bitte eine gültigen REDCap-API-Token eingeben';
     }
@@ -106,22 +122,23 @@ export class HomeComponent implements OnInit {
    * Die erhaltenen Ressourcen werden gefiltert und anschliessend nach REDCap exportiert.
    */
   pushToRedCap() {
-
+    this.progressingCount = 0;
+    this.progress.start();
     this.dialog.closeAll();
 
-      this.showAlert = true;
-      let dialogRef = this.dialog.open(DialogComponent, {
-        height:'300px',
+    // Überprüft ob eine REDCap-API-Token eingegeben wurde.
+    if ((this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '')) {
+      this.progress.done();
+      let dialogRef = this.dialog.open(Dialog2Component, {
         width: '600px',
-        data: 'Falls sie folgende ....'
+        data: 'Keinen REDCap-API-Token angegeben. Um den Datenexport einzuleiten bitte REDCap-API-Token eingeben!'
       });
       dialogRef.afterClosed().subscribe(res => {
-        console.log(`Entschieden: ${res}`);
+        this.REDCapToken = res[0];
+        this.showHint = res[1];
+        console.log(`Token: ${res}`);
       });
 
-
-    // Überprüft ob eine REDCap-API-Token eingegeben wurde.
-    if ((this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '') && this.OKsend) {
       this.ErrorOccured = true;
       this.ErrorMessage = 'Bitte REDCap-API-Token eingeben und den Datentransfer erneut starten!'
       return
@@ -137,7 +154,6 @@ export class HomeComponent implements OnInit {
         .then(res => {
           bundle = JSON.parse(res.text());
           console.log(bundle);
-          this.DataEntry = bundle.entry.length;
 
           /**
            * Um zu wissen wie viele Instrumentinstanzen angelegt werden müssen,
@@ -232,7 +248,17 @@ export class HomeComponent implements OnInit {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen
-              //this.http.post('http://localhost/dashboard/micap/redcap.labyrinth.php', data).subscribe(res => console.log(res));
+              this.http.post('http://localhost/dashboard/micap/redcap.labyrinth.php', data).toPromise()
+                .then(res => {
+                  console.log(res)
+                  this.progressingCount++;
+                  console.log(this.progressingCount);
+                  this.progressValue = this.progressValue + (100 / this.exportCount);
+                  if (this.progressingCount === this.exportCount) {
+                    console.log(true);
+                    this.progress.done();
+                  }
+                }).catch(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -290,7 +316,17 @@ export class HomeComponent implements OnInit {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              //this.http.post('http://localhost/dashboard/micap/redcap.motpoint.php', data).subscribe(res => console.log(res));
+              this.http.post('http://localhost/dashboard/micap/redcap.motpoint.php', data).toPromise().
+                then(res => {
+                  console.log(res)
+                  this.progressingCount++;
+                  console.log(this.progressingCount);
+                  this.progressValue = this.progressValue + (100 / this.exportCount);
+                  if (this.progressingCount === this.exportCount) {
+                    console.log(true);
+                    this.progress.done();
+                  }
+                }).catch(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -378,7 +414,17 @@ export class HomeComponent implements OnInit {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              //this.http.post('http://localhost/dashboard/micap/redcap.motline.php', data).subscribe(res => console.log(res));
+              this.http.post('http://localhost/dashboard/micap/redcap.motline.php', data).toPromise()
+                .then(res => {
+                  console.log(res)
+                  this.progressingCount++;
+                  console.log(this.progressingCount);
+                  this.progressValue = this.progressValue + (100 / this.exportCount);
+                  if (this.progressingCount === this.exportCount) {
+                    console.log(true);
+                    this.progress.done();
+                  }
+                }).catch(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -466,7 +512,17 @@ export class HomeComponent implements OnInit {
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
               // TODO: Die Antwort von REDCap noch anpassen.
-              //this.http.post('http://localhost/dashboard/micap/redcap.digitsymb.php', data).subscribe(res => console.log(res));
+              this.http.post('http://localhost/dashboard/micap/redcap.digitsymb.php', data).toPromise()
+                .then(res => {
+                  console.log(res)
+                  this.progressingCount++;
+                  console.log(this.progressingCount);
+                  this.progressValue = this.progressValue + (100 / this.exportCount);
+                  if (this.progressingCount === this.exportCount) {
+                    console.log(true);
+                    this.progress.done();
+                  }
+                }).catch(res => console.log(res));
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           }
@@ -734,7 +790,17 @@ export class HomeComponent implements OnInit {
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen.
-                    this.http.post('http://localhost/dashboard/micap/redcap.mainsymptoms.php', data1).subscribe(res => console.log(res));
+                    this.http.post('http://localhost/dashboard/micap/redcap.mainsymptoms.php', data1).toPromise()
+                      .then(res => {
+                        console.log(res)
+                        this.progressingCount++;
+                        console.log(this.progressingCount);
+                        this.progressValue = this.progressValue + (100 / this.exportCount);
+                        if (this.progressingCount === this.exportCount) {
+                          console.log(true);
+                          this.progress.done();
+                        }
+                      }).catch(res => console.log(res));
                   } else if (bundle.entry[key].resource.item[item].linkId === '2') {
 
                     // Die MSIS-Instrumentinstanz wird inkrementiert.
@@ -786,7 +852,19 @@ export class HomeComponent implements OnInit {
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!
-                    this.http.post('http://localhost/dashboard/micap/redcap.msis.php', data2).subscribe(res => console.log(res));
+                    this.http.post('http://localhost/dashboard/micap/redcap.msis.php', data2).toPromise()
+                      .then(res => {
+                        console.log(res)
+                        this.progressingCount++;
+                        console.log(this.progressingCount);
+                        this.progressValue = this.progressValue + (100 / this.exportCount);
+                        if (this.progressingCount === this.exportCount) {
+                          console.log(true);
+                          console.log(true);
+                          this.progress.done();
+                        }
+                      }).catch(res => console.log(res));
+
                   } else if (bundle.entry[key].resource.item[item].linkId === '3') {
 
                     // Die FatigueSeverityScale-Instrumentinstanz wird inkrementiert.
@@ -817,13 +895,24 @@ export class HomeComponent implements OnInit {
                     console.log(data3);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-                    this.http.post('http://localhost/dashboard/micap/redcap.fatigue.php', data3).subscribe(res => console.log(res));
+                    this.http.post('http://localhost/dashboard/micap/redcap.fatigue.php', data3).toPromise()
+                      .then(res => {
+                        console.log(res)
+                        this.progressingCount++;
+                        console.log(this.progressingCount);
+                        this.progressValue = this.progressValue + (100 / this.exportCount);
+                        if (this.progressingCount == this.exportCount) {
+                          console.log(true);
+
+                          this.progress.done();
+                        }
+                      }).catch(res => console.log(res));
                   }
                 }
               }
             }
             )
-        })//then für fragebögen
-    }//else
+        });//then für fragebögen
+    }//else API-Token
   }//pushToRedCap
 }//

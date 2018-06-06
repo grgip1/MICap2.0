@@ -1,4 +1,5 @@
-import { HomeComponent } from './../home/home.component';
+import { LoginComponent } from './../login/login.component';
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -10,22 +11,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 export class DialogComponent implements OnInit {
 
 
-  constructor(public thisDialogref: MatDialogRef<HomeComponent>, @Inject(MAT_DIALOG_DATA) public data: string) { }
+  constructor(public thisDialogref: MatDialogRef<LoginComponent>, @Inject(MAT_DIALOG_DATA) public data: string) { }
 
   ngOnInit() {
-    //this.changePosition();
   }
 
   onCloseConfirm(){
-    this.thisDialogref.close('Bestätigt');
+    this.thisDialogref.close(true);
   }
-
-  onCloseCancel(){
-    this.thisDialogref.close('Abgebrochen');
-  }
-
-//   changePosition() {
-//     this.thisDialogref.updatePosition({  });
-// }
-
 }

@@ -1,21 +1,22 @@
-<div class="header">
+<div style="z-index: -1 !important;">
+<div class="header" >
   <p id="userinfo">Sie sind angemeldet als</p>
-  <p> Pero{{User}}</p>
+  <p style="font-weight: bold;"> {{User}}</p>
   <button id="logout" (click)="logout()">Abmelden</button>
 </div>
 <div style="width: 600px; text-align: center; margin: 0 auto;">
   <div>
     <p style="font-weight: bold;">Anzahl der Patienten in der MIDATA-Studie:</p>
-    <p class="showNumber">7{{Patients}}</p>
+    <p class="showNumber">{{Patients}}</p>
   </div>
   <div>
     <p style="font-weight: bold;">Anzahl der Dateneinträge:</p>
-    <p class="showNumber"> 8 {{DataEntry}}</p>
+    <p class="showNumber">{{DataEntry}}</p>
   </div>
   <div>
-    <p style="font-weight: bold; padding-top: 5px;">REDCap-API-TOKEN:</p>
+    <p style="font-weight: bold; padding-top: 5px;">REDCap-API-Token:</p>
     <p class="apiToken"> {{REDCapToken}}</p>
-    <P style="color: red;">Bitte REDCapToken eingeben!</P>
+    <p *ngIf="showHint" style="color: red;">Bitte REDCapToken eingeben!</p>
     <div style="text-align: left;">
       <label>REDCap-API-Token eingeben: </label>
       <input type="text" class="form-control" [(ngModel)]='token' [ngModelOptions]="{standalone: true}">
@@ -23,4 +24,8 @@
     <button (click)="save(token)" class="btn-submit" style="margin-top: 5px; margin-bottom: 5px;">Speichern</button>
   </div>
   <button (click)="pushToRedCap()">Nach REDCap exportieren</button>
+  <div>{{progessValue}}</div>
+</div>
+<img  alt="Logo von MICap" src="assets\images\midata-logo.png" class="info_logo">
+<img alt="Logo von MICap" src="assets\images\REDCap1.png" class="info_logo">
 </div>

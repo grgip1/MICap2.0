@@ -1,0 +1,13 @@
+<div>
+  <h2 mat-dialog-title>Kein REDCap-API-Token angegeben!</h2>
+  <hr>
+  <mat-dialog-content style="text-align: justify;">
+    <strong >{{data}}</strong>
+   <input type="text" class="form-control" [(ngModel)]='token' [ngModelOptions]="{standalone: true}">
+  </mat-dialog-content>
+  <hr>
+  <mat-dialog-actions>
+    <button mat-raised-button (click)="onCloseConfirm(token)">Speichern</button>
+    <button mat-raised-button (click)="onCloseCancel()">Abbrechen</button>
+  </mat-dialog-actions>
+</div>

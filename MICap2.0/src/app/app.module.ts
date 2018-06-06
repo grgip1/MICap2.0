@@ -6,20 +6,18 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialogModule, MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule, MatButtonToggleModule, MatTabsModule } from '@angular/material';
-
-
-
-
+import { MatDialogModule, MatButtonModule} from '@angular/material';
 import { AppRoutingModule, routingComponents } from './app-routing.modules';
 import { MidataConnection } from '../services/MidataConnection';
+import { NgProgressModule } from 'ngx-progressbar';
+
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { DialogComponent } from './dialog/dialog.component';
-
+import { Dialog2Component } from './dialog2/dialog2.component';
 
 
 @NgModule({
@@ -28,6 +26,7 @@ import { DialogComponent } from './dialog/dialog.component';
     routingComponents,
     FeedbackComponent,
     DialogComponent,
+    Dialog2Component,
   ],
   imports: [
     BrowserModule,
@@ -40,27 +39,18 @@ import { DialogComponent } from './dialog/dialog.component';
     MatTableModule,
     MatButtonModule,
     MatDialogModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
     BrowserAnimationsModule,
-    MatButtonToggleModule,
+    NgProgressModule,
   ],
   exports: [
     MatInputModule,
     MatTableModule,
     MatButtonModule,
     MatDialogModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
-    MatButtonToggleModule,
-
   ],
   entryComponents: [
     DialogComponent,
+    Dialog2Component,
   ],
   providers: [
     AppComponent,

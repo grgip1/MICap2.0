@@ -1,12 +1,11 @@
 <div>
-  <h2 mat-dialog-title>Bestätigungs Fenster</h2>
+  <h2 mat-dialog-title>Falsche Berechtigung!</h2>
   <hr>
-  <mat-dialog-content>
-    <strong>{{data}}</strong>
+  <mat-dialog-content style="text-align: justify;">
+    <strong >{{data}}</strong>
   </mat-dialog-content>
   <hr>
   <mat-dialog-actions>
-    <button mat-raised-button (click)="onCloseConfirm()">Bestätigen</button>
-    <button mat-raised-button (click)="onCloseCancel()">Abbrechen</button>
+    <button mat-raised-button (click)="onCloseConfirm()">OK</button>
   </mat-dialog-actions>
 </div>

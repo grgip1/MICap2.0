@@ -1,3 +1,4 @@
+
 /*********CSS für Login-Komponente*********/
 .ng-valid[required], .ng-valid.required  {
   border: 1px solid   rgb(16, 212, 26);
@@ -18,6 +19,8 @@
   height: 130px;
   margin-top: 3%;
   margin-bottom: 40px;
+  position: relative;
+  z-index: -1 !important;
 }
 
 .login{
@@ -77,6 +80,7 @@
   margin: 20px;
   font-weight: bold;
   color: black;
+
 }
 
 .errortext {
@@ -89,7 +93,7 @@
 
 .btn-submit{
   height: 40px;
-  background-color: rgb(30, 91, 224);
+  background-color: rgb(37, 156, 26);
   color: white;
   width: 100%;
   font-size: 20px;
@@ -98,7 +102,7 @@
 }
 
 .btn-submit:hover{
-  background-color: rgb(37, 156, 26);
+  background-color: rgb(46, 204, 32);
 }
 
 .info_logo {
@@ -123,16 +127,18 @@
 }
 
 .header{
-position: absolute;
+ position: absolute;
  top: 40px;
  right: 150px;
+ border: 2px solid rgb(114, 114, 114);
+ padding: 3px;
 }
 
-.md-dialog-container {
+.mat-dialog-container {
+  background-color: white;
   position: absolute;
-}
-
-md-dialog {
-  max-width: 90%;
-  max-height: 90%;
+  top: 25%;
+  left: 25%;
+  max-width: 50%;
+  max-height: 50%;
 }

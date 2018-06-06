@@ -9,7 +9,7 @@
     <form [formGroup]="loginCredent" (ngSubmit)="login()">
       <div class="form-group" style="padding: 10px;">
         <div>
-          <p class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten pseudonymisiert sehen kann!</p>
+          <label class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten pseudonymisiert sehen kann!</label>
         </div>
         <label for="username" class="headline">Benutzername</label>
         <input type="text" class="form-control" formControlName="username" required>
@@ -43,7 +43,7 @@
   <div class="login" *ngIf="!export" style="background-color: rgb(255, 128, 128);">
     <form [formGroup]="loginCredent" (ngSubmit)="login()">
       <div class="form-group" style="padding: 10px;">
-        <p class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten nicht pseudonymisiert sehen kann!</p>
+        <label class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten <label style="text-decoration: underline;">nicht</label> pseudonymisiert sehen kann!</label>
         <label for="username" class="headline">Benutzername</label>
         <input type="text" class="form-control" formControlName="username" required>
         <div *ngIf="username.errors && (username.dirty || username.touched)">

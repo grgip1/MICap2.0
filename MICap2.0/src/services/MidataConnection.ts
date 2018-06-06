@@ -19,7 +19,7 @@ export class MidataConnection {
   public REDCapExportAppName = 'MICap2.0'; // Name vom MICap2.0-Plugins
   public AppSecret = 'Bsc2018'; // AppSecret beider Plugins
   public FeedbackAppName = 'Feedback'; // Name des Feedback-Plugins
-  public authorization = 'Bearer ' + this._authToken; // TODO: wird es noch gebraucht??
+  public PatientNumber: number;
 
   // Setzt Anmeldedten.
   setLogin(authtoken: string, refreshtoken: string, user: string){
