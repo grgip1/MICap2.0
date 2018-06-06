@@ -1,14 +1,138 @@
-/*Css for managing the form of login*/
+/*********CSS für Login-Komponente*********/
 .ng-valid[required], .ng-valid.required  {
-  border: 1px solid   #42A948;
-  border-left: 5px solid #42A948; /* green */
+  border: 1px solid   rgb(16, 212, 26);
+  border-left: 5px solid rgb(37, 156, 26);
 }
 
 .ng-untouched:not(form) {
-  border: 1px solid  rgb(19, 110, 214); /*blue*/
-  border-left:5px solid rgb(19, 110, 214); /*blue*/
+  border: 1px solid  rgb(179, 179, 179);
+  border-left:5px solid rgb(179, 179, 179);
 }
 
  .ng-touched:not(form)  {
-  border-left: 5px solid #a94442; /* red */
+  border-left: 5px solid rgb(255, 0, 0);
+}
+
+.logo {
+  width: 350px;
+  height: 130px;
+  margin-top: 3%;
+  margin-bottom: 40px;
+}
+
+.login{
+  width: 500px;
+  margin-top: 20px;
+  margin: 0 auto;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.selectExport {
+  float: left;
+  width: 50%;
+  height: 40px;
+  border: 0px;
+  color: aliceblue;
+  font-size: 20px;
+  background-color: rgb(94, 177, 255);
+}
+.selectFeedback {
+  float: left;
+  width: 50%;
+  height: 40px;
+  border: 0px;
+  color: aliceblue;
+  font-size: 20px;
+  background-color: rgb(255, 128, 128);;
+}
+
+.loginpage{
+  width: 500px;
+  margin-top: 20px;
+  margin: 0 auto;
+}
+
+.selectFeedback:hover{
+  background-color: rgb(255, 90, 83);
+}
+
+.selectExport:hover{
+  background-color:rgb(0, 153, 255);
+}
+
+.headline {
+  color: white;
+}
+
+.infotext {
+  margin: 20px;
+  font-weight: bold;
+  color: black;
+}
+
+.errortext {
+  color: black;
+  font-weight: bold;
+  margin: 20px;
+  text-decoration: underline;
+  padding: 10px;
+}
+
+.btn-submit{
+  height: 40px;
+  background-color: rgb(30, 91, 224);
+  color: white;
+  width: 100%;
+  font-size: 20px;
+  border: 0px;
+  border-radius: 4px;
+}
+
+.btn-submit:hover{
+  background-color: rgb(37, 156, 26);
+}
+
+.info_logo {
+  width: 700px;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+/*********CSS für Login-Komponente*********/
+
+/*********CSS für Home-Komponente*********/
+
+.showNumber{
+  font-weight: bold;
+  border-bottom: 2px solid;
+  font-size: 40px;
+}
+
+.apiToken{
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.header{
+position: absolute;
+ top: 40px;
+ right: 150px;
+}
+
+.md-dialog-container {
+  position: absolute;
+}
+
+md-dialog {
+  max-width: 90%;
+  max-height: 90%;
 }

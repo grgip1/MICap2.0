@@ -1,38 +1,80 @@
-<form [formGroup]="loginCredent" style="width: 280px; margin-left: 38%; margin-top:30px;" (ngSubmit)="login()">
-  <label>Bitte Aktion auswählen</label>
-  <select (change)="selectChangeHandler($event)" class="form-control">
-    <option *ngFor="let item of selectLogin">{{item}}</option>
-  </select>
-  <div class="form-group" style="margin-top: 10px">
-    <label for="username">Benutzername</label>
-    <input type="text" class="form-control" formControlName="username" required>
-    <div *ngIf="username.errors && (username.dirty || username.touched)">
-      <p *ngIf="username.errors.required">Benutzername muss eingeben werden!</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label>Passwort</label>
-    <input type="password" class="form-control" formControlName="password" required>
-    <div *ngIf="password.errors && (password.dirty || password.touched)">
-      <p *ngIf="password.errors.required">Passwort muss eingeben werden!</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="device">Device Code: </label>
-    <input type="text" class="form-control" formControlName="device" required>
-    <div *ngIf="device.errors && (device.dirty || device.touched)">
-      <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
-    </div>
-  </div>
-  <button type="submit" calss="btn btn-success">Anmelden</button>
-</form>
-<div style="width: 380px; margin-left: 36%; margin-top: 20px;">
-  <div *ngIf="errorOccured" style="color: red; font: bold; margin: 20px">
-    {{errorMessage}}
-  </div>
+<div class="loginpage">
   <div>
-    <p *ngIf="export">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten Pseudonymisiert sehen kann!</p>
-    <p *ngIf="!export">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten nicht Pseudonymisiert sehen kann!</p>
-  <button class="info-button">?</button>
+    <button class="selectExport" (click)="changeColor(true)">Exportieren</button>
+    <button class="selectFeedback" (click)="changeColor(false)">Rückmeldung</button>
+    <br>
+    <br>
+  </div>
+  <div class="login" *ngIf="export" style="background-color: rgb(94, 177, 255)">
+    <form [formGroup]="loginCredent" (ngSubmit)="login()">
+      <div class="form-group" style="padding: 10px;">
+        <div>
+          <p class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten pseudonymisiert sehen kann!</p>
+        </div>
+        <label for="username" class="headline">Benutzername</label>
+        <input type="text" class="form-control" formControlName="username" required>
+        <div *ngIf="username.errors && (username.dirty || username.touched)">
+          <p *ngIf="username.errors.required">Benutzername muss eingeben werden!</p>
+        </div>
+      </div>
+      <div class="form-group" style="padding: 10px;">
+        <label class="headline">Passwort</label>
+        <input type="password" class="form-control" formControlName="password" required>
+        <div *ngIf="password.errors && (password.dirty || password.touched)">
+          <p *ngIf="password.errors.required">Passwort muss eingeben werden!</p>
+        </div>
+      </div>
+      <div class="form-group" style="padding: 10px;">
+        <label for="device" class="headline">Device Code</label>
+        <input type="text" class="form-control" formControlName="device" required>
+        <div *ngIf="device.errors && (device.dirty || device.touched)">
+          <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
+        </div>
+      </div>
+      <div style="padding: 10px;">
+        <button type="submit" class="btn-submit">Anmelden</button>
+      </div>
+      <div *ngIf="errorOccured" class="errortext">
+        {{errorMessage}}
+      </div>
+    </form>
+  </div>
+
+  <div class="login" *ngIf="!export" style="background-color: rgb(255, 128, 128);">
+    <form [formGroup]="loginCredent" (ngSubmit)="login()">
+      <div class="form-group" style="padding: 10px;">
+        <p class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten nicht pseudonymisiert sehen kann!</p>
+        <label for="username" class="headline">Benutzername</label>
+        <input type="text" class="form-control" formControlName="username" required>
+        <div *ngIf="username.errors && (username.dirty || username.touched)">
+          <p *ngIf="username.errors.required">Benutzername muss eingeben werden!</p>
+        </div>
+      </div>
+      <div class="form-group" style="padding: 10px;">
+        <label class="headline">Passwort</label>
+        <input type="password" class="form-control" formControlName="password" required>
+        <div *ngIf="password.errors && (password.dirty || password.touched)">
+          <p *ngIf="password.errors.required">Passwort muss eingeben werden!</p>
+        </div>
+      </div>
+      <div class="form-group" layout="row" style="padding: 10px;">
+        <label for="device" class="headline">Device Code</label>
+        <input type="text" class="form-control" formControlName="device" required>
+        <div *ngIf="device.errors && (device.dirty || device.touched)">
+          <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
+        </div>
+      </div>
+      <div style="padding: 10px;">
+        <button type="submit" class="btn-submit">Anmelden</button>
+      </div>
+      <div *ngIf="errorOccured" class="errortext">
+        {{errorMessage}}
+      </div>
+    </form>
   </div>
 </div>
+<div class="info_logo">
+    <img *ngIf="export" alt="Logo von MICap" src="assets\images\datenexport_prototyp.png" class="info_logo">
+    <img *ngIf="!export" alt="Logo von MICap" src="assets\images\datenexport_prototyp2.png" class="info_logo">
+</div>
+

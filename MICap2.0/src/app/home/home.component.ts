@@ -1,3 +1,5 @@
+import { DialogComponent } from './../dialog/dialog.component';
+import { MatDialog } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MidataConnection } from '../../services/MidataConnection';
@@ -29,24 +31,25 @@ export class HomeComponent implements OnInit {
   ErrorMessage: string;                                     // Text der Fehlermeldung.
   private errorOccured: boolean;                            // Indikator dass ein Fehler aufgetreten ist.
   private errorMessage: string;                             // Fehlermeldung welche beim Login auftritt.
-  timer = Observable.interval(5000).subscribe(() => { this.pushToRedCap(); });
+  //timer = Observable.interval(5000).subscribe(() => { this.pushToRedCap(); });
   private OKsend: boolean = false;
   private showHint: boolean;
   private showAlert: boolean;
-  constructor(private router: Router, private midata: MidataConnection, private http: Http) {
-    if (this.REDCapToken !== 'Keinen REDCap-API-Token angegeben') {
-      this.timer;
-    }
+  constructor(private router: Router, private midata: MidataConnection, private http: Http, public dialog: MatDialog) {
+    // if (this.REDCapToken !== 'Keinen REDCap-API-Token angegeben') {
+    //   this.timer;
+    // }
   }
+  dialogResult: any;
 
   /**
    * Beim starten dieser Komponente wird eine Verbindung zu MIDATA hergestellt.
    * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
    */
   ngOnInit() {
-    if (this.midata._authToken == undefined) {
-      this.router.navigate(['login']);
-    }
+    // if (this.midata._authToken == undefined) {
+    //   this.router.navigate(['login']);
+    // }
 
     if (this.REDCapToken === 'Keinen REDCap-API-Token angegeben') {
       this.showHint = true;
@@ -80,7 +83,7 @@ export class HomeComponent implements OnInit {
 
   // Navigiert zur Login-Komponente und setzt die Token auf undefiniert.
   logout() {
-    this.timer.unsubscribe();
+    //this.timer.unsubscribe();
     this.midata._authToken = undefined;
     this.midata._refreshToken = undefined;
     this.router.navigate(['login']);
@@ -104,9 +107,18 @@ export class HomeComponent implements OnInit {
    */
   pushToRedCap() {
 
-    if(!this.OKsend){
+    this.dialog.closeAll();
+
       this.showAlert = true;
-    }
+      let dialogRef = this.dialog.open(DialogComponent, {
+        height:'300px',
+        width: '600px',
+        data: 'Falls sie folgende ....'
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        console.log(`Entschieden: ${res}`);
+      });
+
 
     // Überprüft ob eine REDCap-API-Token eingegeben wurde.
     if ((this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '') && this.OKsend) {

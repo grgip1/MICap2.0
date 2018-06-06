@@ -24,11 +24,11 @@ export class LoginComponent implements OnInit {
   private errorMessage: string;     // Fehlermeldung welche beim Login auftritt.
   private errorOccured: boolean;    // Indikator dass ein Fehler aufgetrten ist.
 
-  private selectLogin = [
-    'Rückmeldung holen',
-    'Daten nach REDCap exportieren'
-  ];
-  private export: boolean = false;
+  // private selectLogin = [
+  //   'Rückmeldung holen',
+  //   'Daten nach REDCap exportieren'
+  // ];
+  private export: boolean = true;
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http) {
   }
@@ -37,15 +37,10 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.createFormControls();
     this.createForm();
-    console.log(this.selectLogin);
   }
 
-  selectChangeHandler(event: any) {
-    if (event.target.value === this.selectLogin[1]) {
-      this.export = true;
-    } else {
-      this.export = false;
-    }
+  changeColor (color: boolean) {
+    this.export = color
     this.errorOccured = false;
     this.errorMessage = undefined;
     console.log(this.export);
