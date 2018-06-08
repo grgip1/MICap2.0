@@ -11,6 +11,7 @@
 }
 
  .ng-touched:not(form)  {
+  border: 1px solid rgb(255, 0, 0);
   border-left: 5px solid rgb(255, 0, 0);
 }
 
@@ -24,9 +25,9 @@
 }
 
 .login{
-  /* max-width: 50%; */
   margin-top: 20px;
   margin: 0 auto;
+  margin-bottom: 20px;
 }
 
 .example-form {
@@ -44,9 +45,10 @@
   width: 50%;
   height: 40px;
   border: 0px;
-  color: aliceblue;
+  color: rgb(94, 177, 255);
   font-size: 150%;
-  background-color: rgb(94, 177, 255);
+  background-color: white;
+  border: 4px solid rgb(94, 177, 255);
 }
 .selectFeedback {
   float: left;
@@ -55,7 +57,9 @@
   border: 0px;
   color: aliceblue;
   font-size: 150%;
-  background-color: rgb(255, 128, 128);;
+  color: rgb(255, 128, 128);
+  background-color: white;
+  border: 4px solid rgb(255, 128, 128);
 }
 
 .loginpage{
@@ -65,15 +69,17 @@
 }
 
 .selectFeedback:hover{
-  background-color: rgb(255, 90, 83);
+  color: white;
+  background-color: rgb(255, 128, 128);
 }
 
 .selectExport:hover{
-  background-color:rgb(0, 153, 255);
+  color: white;
+  background-color:rgb(94, 177, 255);
 }
 
 .headline {
-  color: white;
+
 }
 
 .infotext {
@@ -96,7 +102,7 @@
   background-color: rgb(37, 156, 26);
   color: white;
   width: 100%;
-  font-size: 20px;
+  font-size: 120%;
   border: 0px;
   border-radius: 4px;
 }
@@ -106,10 +112,9 @@
 }
 
 .info_logo {
-  width: 700px;
-  height: 200px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 80%;
+  max-height: 30;
+  margin: auto;
 }
 /*********CSS für Login-Komponente*********/
 
@@ -118,19 +123,22 @@
 .showNumber{
   font-weight: bold;
   border-bottom: 2px solid;
-  font-size: 40px;
+  font-size: 250%;
 }
 
 .apiToken{
-  font-size: 25px;
+  border-bottom: 1px solid lightgray;
+  font-size: 150%;
   font-weight: bold;
+  max-width: 70%;
+  margin: auto;
+  margin-bottom: 10px;
 }
 
 .header{
  position: absolute;
- top: 40px;
- right: 150px;
- border: 2px solid rgb(114, 114, 114);
+ top: 5%;
+ right: 10%;
  padding: 3px;
 }
 
@@ -140,5 +148,5 @@
   top: 25%;
   left: 25%;
   max-width: 50%;
-  max-height: 50%;
+  max-height: 60%;
 }

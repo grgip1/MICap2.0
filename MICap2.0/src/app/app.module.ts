@@ -10,6 +10,7 @@ import { MatDialogModule, MatButtonModule} from '@angular/material';
 import { AppRoutingModule, routingComponents } from './app-routing.modules';
 import { MidataConnection } from '../services/MidataConnection';
 import { NgProgressModule } from 'ngx-progressbar';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 import { AppComponent } from './app.component';
@@ -41,12 +42,14 @@ import { Dialog2Component } from './dialog2/dialog2.component';
     MatDialogModule,
     BrowserAnimationsModule,
     NgProgressModule,
+    MatMenuModule,
   ],
   exports: [
     MatInputModule,
     MatTableModule,
     MatButtonModule,
     MatDialogModule,
+    MatMenuModule,
   ],
   entryComponents: [
     DialogComponent,

@@ -30,7 +30,7 @@ export class MidataConnection {
 
   public feedbackAuthRequest: AuthRequest = {
     username: 'micap2.0@bachelor.ch',
-    password: 'Lc12345678',
+    password: 'MitrendsStudy18',
     appname: 'Feedback',
     secret: 'Bsc2018',
     device: 'debug',

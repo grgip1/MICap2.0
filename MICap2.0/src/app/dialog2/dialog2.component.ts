@@ -20,7 +20,7 @@ export class Dialog2Component implements OnInit {
   }
 
   onCloseCancel(){
-    this.thisDialogref.close('Keinen REDCap-API-Token angegeben');
+    this.thisDialogref.close(['', true]);
   }
 
 }

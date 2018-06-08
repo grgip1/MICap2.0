@@ -1,11 +1,13 @@
 <div class="loginpage">
   <div>
-    <button class="selectExport" (click)="changeColor(true)">Exportieren</button>
-    <button class="selectFeedback" (click)="changeColor(false)">Rückmeldung</button>
+    <button *ngIf="!export" style="background-color: white; color:rgb(94, 177, 255);" class="selectExport" (click)="changeColor(true)">Exportieren</button>
+    <button *ngIf="export" class="selectExport" style="background-color: rgb(94, 177, 255); color:white;" (click)="changeColor(true)">Exportieren</button>
+    <button *ngIf="export"  style="background-color: white; color: rgb(255, 128, 128);"   class="selectFeedback" (click)="changeColor(false)">Rückmeldung</button>
+    <button *ngIf="!export" style="background-color: rgb(255, 128, 128); color: white;"class="selectFeedback" (click)="changeColor(false)">Rückmeldung</button>
     <br>
     <br>
   </div>
-  <div class="login" *ngIf="export" style="background-color: rgb(94, 177, 255)">
+  <div class="login" *ngIf="export" style=" border: 4px solid rgb(94, 177, 255); border-top: 0px;">
     <form [formGroup]="loginCredent" (ngSubmit)="login()">
       <div class="form-group" style="padding: 10px;">
         <div>
@@ -24,14 +26,15 @@
           <p *ngIf="password.errors.required">Passwort muss eingeben werden!</p>
         </div>
       </div>
-      <div class="form-group" style="padding: 10px;">
+      <div class="form-group" style="padding: 10px; margin-bottom: 0px;">
         <label for="device" class="headline">Device Code</label>
         <input type="text" class="form-control" formControlName="device" required>
         <div *ngIf="device.errors && (device.dirty || device.touched)">
           <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
         </div>
       </div>
-      <div style="padding: 10px;">
+      <div style="padding: 10px; text-align: center;">
+          <img alt="Datenfluss" src="assets\images\datenexport_prototyp.png" class="info_logo">
         <button type="submit" class="btn-submit">Anmelden</button>
       </div>
       <div *ngIf="errorOccured" class="errortext">
@@ -39,8 +42,7 @@
       </div>
     </form>
   </div>
-
-  <div class="login" *ngIf="!export" style="background-color: rgb(255, 128, 128);">
+  <div class="login" *ngIf="!export" style=" border: 4px solid rgb(255, 128, 128); border-top: 0px;">
     <form [formGroup]="loginCredent" (ngSubmit)="login()">
       <div class="form-group" style="padding: 10px;">
         <label class="infotext">Bitte mit einem Forscherkonto anmelden, welcher die Forschungsdaten <label style="text-decoration: underline;">nicht</label> pseudonymisiert sehen kann!</label>
@@ -64,8 +66,9 @@
           <p *ngIf="device.errors.required">Der Device Code muss eingeben werden!</p>
         </div>
       </div>
-      <div style="padding: 10px;">
-        <button type="submit" class="btn-submit">Anmelden</button>
+      <div style=" padding: 10px; text-align: center;">
+          <img alt="Datenflus2" src="assets\images\datenexport_prototyp2.png" class="info_logo">
+        <button type="submit"  style="padding: 10px;" class="btn-submit">Anmelden</button>
       </div>
       <div *ngIf="errorOccured" class="errortext">
         {{errorMessage}}
@@ -73,8 +76,3 @@
     </form>
   </div>
 </div>
-<div class="info_logo">
-    <img *ngIf="export" alt="Logo von MICap" src="assets\images\datenexport_prototyp.png" class="info_logo">
-    <img *ngIf="!export" alt="Logo von MICap" src="assets\images\datenexport_prototyp2.png" class="info_logo">
-</div>
-

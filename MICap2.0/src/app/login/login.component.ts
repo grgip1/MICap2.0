@@ -25,12 +25,7 @@ export class LoginComponent implements OnInit {
   private device: FormControl;      // Form-Controller welcher den Device-Code beinhaltet.
   private errorMessage: string;     // Fehlermeldung welche beim Login auftritt.
   private errorOccured: boolean;    // Indikator dass ein Fehler aufgetrten ist.
-
-  // private selectLogin = [
-  //   'Rückmeldung holen',
-  //   'Daten nach REDCap exportieren'
-  // ];
-  private export: boolean = true;
+  private export: boolean = true;   // Überprüft ob exportiert oder die Rückmeldung geholt werden will.
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http, public dialog: MatDialog) {
   }
@@ -41,6 +36,7 @@ export class LoginComponent implements OnInit {
     this.createForm();
   }
 
+  // Ändert die Farbe des Logins.
   changeColor(color: boolean) {
     this.export = color
     this.errorOccured = false;
@@ -83,7 +79,10 @@ export class LoginComponent implements OnInit {
       role: 'research'
     }
 
+
+    // Array mit den Patientennamen. Wird befüllt falls der Nutzer die Daten nicht pseudonymisiert sehen kann
     let PatientNames: Array<String> = [];
+
     /**
      * Meldet sich mit dem vom Nuter angegebenen Anmeldeparameter an.
      * Im gleichen Schritt wird der Authentifikations-Token,
@@ -96,7 +95,9 @@ export class LoginComponent implements OnInit {
           const bundle = JSON.parse(res.text());
           this.midata.setLogin(bundle.authToken, bundle.refreshToken, bundle.owner);
           this.midata._authToken = bundle.authToken;
-        }).catch(
+        })
+        // Fehlerbehandlung.
+        .catch(
           error => {
             this.errorOccured = true;
             if (error.text() === 'Unknown user or bad password') {
@@ -108,7 +109,7 @@ export class LoginComponent implements OnInit {
             }
           })
 
-      // Fals kein fehler auftritt, wird der Nutzer zu der HomePage weitergeleitet.
+      // Fals kein Fehler auftritt, wird der Nutzer zu der HomePage weitergeleitet.
       .then(
         () => {
           let headers = new Headers();
@@ -117,7 +118,12 @@ export class LoginComponent implements OnInit {
 
           // Verbindung mit MIDATA und herauslesen wie viele Patienten in der Studie sind und der User wird gesetzt.
           this.http.get(this.midata.patientRequestURL, Options).toPromise()
-            .then(
+
+          /**
+           * Array wird mit Patientenamen befüllt. Kann nur gemacht werden,
+           * wenn der Nutzer die MIDATA-Studiendaten nicht pseudonymisiert sehen kann.
+          */
+          .then(
               res => {
                 const bundle = JSON.parse(res.text());
                 this.midata.PatientNumber= bundle.total;
@@ -133,6 +139,11 @@ export class LoginComponent implements OnInit {
                   console.log(PatientNames);
                 }
               })
+
+              /**
+               * Falls der Patientennamen-Array einträge hat, der Nutzer jedoch de Daten exportieren will,
+               * erscheint ein Dialog-Fenster und informiert den Nutzer wieso das der Export nicht gemacht werden kann.
+              */
             .then(
               () => {
                 if (PatientNames.length > 0 && this.export) {
@@ -153,7 +164,12 @@ export class LoginComponent implements OnInit {
                   }
                 }
               }
-            ).catch(() => {
+            )
+            /**
+             * Falls der Array mit den Patientennamen leer ist, der Nutzer jedoch die Rückmeldungen aus REDCap holen möchte,
+             * erscheint ein Dialog-Fenster welches den Nutzer informiert weiso die Rückmeldungen nicht geholt werden können.
+             */
+            .catch(() => {
               if (PatientNames.length === 0 && !this.export && !this.errorOccured) {
 
                 let dialogRef = this.dialog.open(DialogComponent, {
@@ -166,12 +182,14 @@ export class LoginComponent implements OnInit {
                 dialogRef.afterClosed().subscribe(res => {
                   console.log('stay');
                 });
-              } else if (PatientNames.length === 0 && this.export) {
+              }
+              // Falls alles stimmt, wird der Nutzer zu der entsprechenden Siete weitergeleitet.
+              else if (PatientNames.length === 0 && this.export) {
                 if (!this.errorOccured) {
                   this.router.navigate(['home']);
                 }
               }
-            });// then patliste abfüllen
+            });
         })
   }// login
 }//klasse

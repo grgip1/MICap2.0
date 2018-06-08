@@ -1,31 +1,26 @@
 <div style="z-index: -1 !important;">
-<div class="header" >
-  <p id="userinfo">Sie sind angemeldet als</p>
-  <p style="font-weight: bold;"> {{User}}</p>
-  <button id="logout" (click)="logout()">Abmelden</button>
-</div>
-<div style="width: 600px; text-align: center; margin: 0 auto;">
-  <div>
-    <p style="font-weight: bold;">Anzahl der Patienten in der MIDATA-Studie:</p>
-    <p class="showNumber">{{Patients}}</p>
+  <div class="header">
+    <p style="font-weight: bold;"> {{User}} </p>
+    <button id="logout" (click)="logout()">Abmelden</button>
   </div>
-  <div>
-    <p style="font-weight: bold;">Anzahl der Dateneinträge:</p>
-    <p class="showNumber">{{DataEntry}}</p>
-  </div>
-  <div>
-    <p style="font-weight: bold; padding-top: 5px;">REDCap-API-Token:</p>
-    <p class="apiToken"> {{REDCapToken}}</p>
-    <p *ngIf="showHint" style="color: red;">Bitte REDCapToken eingeben!</p>
-    <div style="text-align: left;">
-      <label>REDCap-API-Token eingeben: </label>
-      <input type="text" class="form-control" [(ngModel)]='token' [ngModelOptions]="{standalone: true}">
+  <div style="max-width: 38%; text-align: center; margin: 0 auto;">
+    <div>
+      <p style="font-weight: bold;">Anzahl der Patienten in der MIDATA-Studie:</p>
+      <p class="showNumber">{{Patients}}</p>
     </div>
-    <button (click)="save(token)" class="btn-submit" style="margin-top: 5px; margin-bottom: 5px;">Speichern</button>
+    <div>
+      <p style="font-weight: bold;">Anzahl der Dateneinträge:</p>
+      <p class="showNumber">{{DataEntry}}</p>
+    </div>
+    <div style="margin-bottom: 10px;">
+      <p style="font-weight: bold; padding-top: 5px;">REDCap-API-Token:</p>
+      <p class="apiToken"> {{REDCapToken}}</p>
+      <p *ngIf="showHint" style="color: red;">Bitte REDCapToken eingeben!</p>
+      <div style="text-align: left;">
+        <input type="text" class="form-control" [(ngModel)]='REDCapToken' [ngModelOptions]="{standalone: true}">
+      </div>
+    </div>
+    <label style="color: red;">{{errorMessage}}</label>
+    <button (click)="pushToRedCap()" class="btn-submit" style="margin-top: 5px; margin-bottom: 5px;">Nach REDCap exportieren</button>
   </div>
-  <button (click)="pushToRedCap()">Nach REDCap exportieren</button>
-  <div>{{progessValue}}</div>
-</div>
-<img  alt="Logo von MICap" src="assets\images\midata-logo.png" class="info_logo">
-<img alt="Logo von MICap" src="assets\images\REDCap1.png" class="info_logo">
 </div>

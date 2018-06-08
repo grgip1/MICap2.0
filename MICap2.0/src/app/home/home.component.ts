@@ -1,4 +1,3 @@
-import { DialogComponent } from './../dialog/dialog.component';
 import { Dialog2Component } from './../dialog2/dialog2.component';
 import { MatDialog } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
@@ -24,40 +23,49 @@ import { NgProgress } from 'ngx-progressbar';
 
 export class HomeComponent implements OnInit {
 
-  REDCapToken: string = 'Keinen REDCap-API-Token angegeben' // REDCap-API-Token.
-  User: any;                                                // Welcher User eingeloggt ist.
-  DataEntry: number = 0;                                        // Anzahl vorhandener Daten in der Studie.
-  Patients: number = 0;                                         // Anzahl Patienten in der Studie.
+  REDCapToken: string = '' // REDCap-API-Token.
+  User: string;                                             // Name vom Nutzer.
+  DataEntry: number = 0;                                    // Anzahl vorhandener Daten in der Studie.
+  Patients: number = 0;                                     // Anzahl Patienten in der Studie.
   Options: RequestOptions;                                  // Autorisierung-Header für das Holen der Studiendaten.
-  ErrorOccured: boolean;                                    // Zum erkennen ob Fehler aufgetaucht sind.
   ErrorMessage: string;                                     // Text der Fehlermeldung.
-  private errorOccured: boolean;                            // Indikator dass ein Fehler aufgetreten ist.
   private errorMessage: string;                             // Fehlermeldung welche beim Login auftritt.
-  //timer = Observable.interval(500).subscribe(() => { /*this.pushToRedCap();*/ if(this.exporting){this.progress.done;} });
-  private showHint: boolean;
-  private PatientNames: Array<String> = [];
-  private exportCount: number;
-  private progressingCount: number = 0;
-  private progressValue: number = 0;
+  private showHint: boolean = true;                         // Wird benutzt um zu entscheiden ob der Hint engezeigt werden soll.
+  private exportCount: number;                              // Anzahl der zu exportierenden Daten
+  private progressingCount: number = 0;                     // Zählz wie viele export gemacht wurden.
   private exporting: boolean = false;
+  private timer = Observable.interval(120000).subscribe(     // Timer welcher den Export nach einem gewissen Zeitinerval startet.
+    () => {
+      if(!this.showHint && !this.exporting){
+        this.pushToRedCap();
+      }
+    });
+
+  private timer2 = Observable.interval(500).subscribe(      // Timer welcher überprüft ob ein REDCap-API-Token eingegeben wurde.
+    () => {
+      if (this.REDCapToken !== '') {
+      this.showHint = false;
+      } else {
+        this.showHint = true
+      }
+    });
 
   constructor(private router: Router, private midata: MidataConnection, private http: Http, public dialog: MatDialog, private progress: NgProgress) {
-       //this.timer;
   }
-  dialogResult: any;
 
   /**
    * Beim starten dieser Komponente wird eine Verbindung zu MIDATA hergestellt.
    * Die Anzahl der Patienten und der vorhanden Daten in der Studie werden ausgelesen.
    */
   ngOnInit() {
+
+    // Überprüft ob der Nutzer angemeldet ist.
     if (this.midata._authToken == undefined) {
       this.router.navigate(['login']);
     }
 
-    if (this.REDCapToken === 'Keinen REDCap-API-Token angegeben') {
-      this.showHint = true;
-    }
+    // Timer für das Überprüfen vom Hint wird gestartet.
+    this.timer2;
 
     /**
      * Der Header mit dem authenticate-token wird erstellt.
@@ -68,7 +76,10 @@ export class HomeComponent implements OnInit {
     this.Options = new RequestOptions({ headers: headers });
     this.Patients = this.midata.PatientNumber;
 
+    // Anzahl Observations in der MIDATA-Studie.
     let numberObservations: number;
+
+    // Anzahl Questionnaires in der MIDATA-Studie.
     let numberQuestionnaires: number;
 
     // Verbindung mit MIDATA um den Namen des Nutzer zu holen.
@@ -78,43 +89,41 @@ export class HomeComponent implements OnInit {
         this.User = bundle.name[0].family + ' ' + bundle.name[0].given[0];
       });
 
-    // Verbindung mit MIDATA und herauslesen wie viele Testeresultate in der Studie sind.
+    // Anzahl der Observations wird abgefragt.
     this.http.get(this.midata.observationRequestURL, this.Options).toPromise()
       .then(res => {
         let bundle = JSON.parse(res.text());
         numberObservations = bundle.entry.length;
-      }).then(() => {
+      })
+      // Anzahl der Questionnaires wird abgefragt.
+      .then(() => {
         this.http.get(this.midata.questionnaireRequestURL, this.Options).toPromise()
           .then(res => {
             let bundle = JSON.parse(res.text());
             numberQuestionnaires = bundle.entry.length;
-          }).then(() => {
+          })
+          // Summiert die Anzahl der Observation und Questionnaires und berechnet wie viele export notwendig sind.
+          .then(() => {
             this.DataEntry = numberObservations + numberQuestionnaires;
-            this.exportCount = numberObservations + (numberQuestionnaires * 3)-2;// -2 weil noch 2 probe durchläufe sind in der Studie!!!!!!!!!!!!!!!!!!!!!!
+
+            // Anzahl der nötigen Exports
+            this.exportCount = numberObservations + (numberQuestionnaires * 3) - 2;// -2 weil noch 2 probe durchläufe sind in der Studie!!!!!!!!!!!!!!!!!!!!!!
             console.log(this.exportCount);
           });
       });
   }
 
-  // Navigiert zur Login-Komponente und setzt die Token auf undefiniert.
+  /**
+   * Der Nutzer wird abgemeldet und die Timer werden beendet.
+   */
   logout() {
-    //this.timer.unsubscribe();
+    // Notwendig falls während dem Ladens sich der Nutzer abmeldet.
+    this.progress.done();
+    this.timer.unsubscribe();
+    this.timer2.unsubscribe();
     this.midata._authToken = undefined;
     this.midata._refreshToken = undefined;
     this.router.navigate(['login']);
-  }
-
-  // Speichert den vom Benutzer eingegebenen REDCap-API-Token.
-  save(token: string) {
-    this.progress.done();
-    this.errorOccured = false;
-    if (token === undefined) {
-      this.errorOccured = true;
-      this.errorMessage = 'Ungültiger REDCap-API-Token! Bitte eine gültigen REDCap-API-Token eingeben';
-    }
-    this.showHint = false;
-    this.REDCapToken = token;
-
   }
 
   /**
@@ -122,27 +131,26 @@ export class HomeComponent implements OnInit {
    * Die erhaltenen Ressourcen werden gefiltert und anschliessend nach REDCap exportiert.
    */
   pushToRedCap() {
+    this.errorMessage ='';
     this.progressingCount = 0;
     this.progress.start();
     this.dialog.closeAll();
 
-    // Überprüft ob eine REDCap-API-Token eingegeben wurde.
-    if ((this.REDCapToken == 'Keinen REDCap-API-Token angegeben' || this.REDCapToken === '')) {
+    // Überprüft ob eine REDCap-API-Token eingegeben wurde. Falls kein Token vorhanden ist, wird ein Dialog-Fenster geöffnet.
+    if ((this.REDCapToken === '')) {
       this.progress.done();
       let dialogRef = this.dialog.open(Dialog2Component, {
         width: '600px',
         data: 'Keinen REDCap-API-Token angegeben. Um den Datenexport einzuleiten bitte REDCap-API-Token eingeben!'
       });
       dialogRef.afterClosed().subscribe(res => {
-        this.REDCapToken = res[0];
-        this.showHint = res[1];
+        if (!res[1]) {
+          this.REDCapToken = res[0];
+        }
         console.log(`Token: ${res}`);
       });
-
-      this.ErrorOccured = true;
-      this.ErrorMessage = 'Bitte REDCap-API-Token eingeben und den Datentransfer erneut starten!'
-      return
     } else {
+      this.exporting = true; // Das Programm weiss dann, dass es am Exportieren ist.
       let bundle: any; // Ressourcen-Bundle mit den Observations.
 
       /**
@@ -247,18 +255,20 @@ export class HomeComponent implements OnInit {
               // console.log(data);
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-              // TODO: Die Antwort von REDCap noch anpassen
               this.http.post('http://localhost/dashboard/micap/redcap.labyrinth.php', data).toPromise()
                 .then(res => {
-                  console.log(res)
+                  // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                  if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                    this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                  }
                   this.progressingCount++;
-                  console.log(this.progressingCount);
-                  this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                  // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                   if (this.progressingCount === this.exportCount) {
-                    console.log(true);
+                    this.exporting = false;
                     this.progress.done();
                   }
-                }).catch(res => console.log(res));
+                });
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -315,18 +325,21 @@ export class HomeComponent implements OnInit {
               // console.log(data);
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-              // TODO: Die Antwort von REDCap noch anpassen.
               this.http.post('http://localhost/dashboard/micap/redcap.motpoint.php', data).toPromise().
                 then(res => {
-                  console.log(res)
+
+                  // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                  if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                    this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                  }
                   this.progressingCount++;
-                  console.log(this.progressingCount);
-                  this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                  // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                   if (this.progressingCount === this.exportCount) {
-                    console.log(true);
+                    this.exporting = false;
                     this.progress.done();
                   }
-                }).catch(res => console.log(res));
+                });
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -413,18 +426,21 @@ export class HomeComponent implements OnInit {
               // console.log(data);
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-              // TODO: Die Antwort von REDCap noch anpassen.
               this.http.post('http://localhost/dashboard/micap/redcap.motline.php', data).toPromise()
                 .then(res => {
-                  console.log(res)
+
+                  // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                  if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                    this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                  }
                   this.progressingCount++;
-                  console.log(this.progressingCount);
-                  this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                  // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                   if (this.progressingCount === this.exportCount) {
-                    console.log(true);
+                    this.exporting = false;
                     this.progress.done();
                   }
-                }).catch(res => console.log(res));
+                });
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -511,18 +527,21 @@ export class HomeComponent implements OnInit {
               // console.log(data);
 
               // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-              // TODO: Die Antwort von REDCap noch anpassen.
               this.http.post('http://localhost/dashboard/micap/redcap.digitsymb.php', data).toPromise()
                 .then(res => {
-                  console.log(res)
+
+                  // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                  if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                    this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                  }
                   this.progressingCount++;
-                  console.log(this.progressingCount);
-                  this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                  // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                   if (this.progressingCount === this.exportCount) {
-                    console.log(true);
+                    this.exporting = false;
                     this.progress.done();
                   }
-                }).catch(res => console.log(res));
+                });
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           }
@@ -789,18 +808,21 @@ export class HomeComponent implements OnInit {
                     console.log(data1);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-                    // TODO: Die Antwort von REDCap noch anpassen.
                     this.http.post('http://localhost/dashboard/micap/redcap.mainsymptoms.php', data1).toPromise()
                       .then(res => {
-                        console.log(res)
+
+                        // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                        if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                          this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                        }
                         this.progressingCount++;
-                        console.log(this.progressingCount);
-                        this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                        // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                         if (this.progressingCount === this.exportCount) {
-                          console.log(true);
+                          this.exporting = false;
                           this.progress.done();
                         }
-                      }).catch(res => console.log(res));
+                      });
                   } else if (bundle.entry[key].resource.item[item].linkId === '2') {
 
                     // Die MSIS-Instrumentinstanz wird inkrementiert.
@@ -851,19 +873,21 @@ export class HomeComponent implements OnInit {
                     console.log(data2);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
-                    // TODO: Die Antwort von REDCap noch anpassen. + Testen ob es funltioniert!
                     this.http.post('http://localhost/dashboard/micap/redcap.msis.php', data2).toPromise()
                       .then(res => {
-                        console.log(res)
+
+                        // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                        if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                          this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                        }
                         this.progressingCount++;
-                        console.log(this.progressingCount);
-                        this.progressValue = this.progressValue + (100 / this.exportCount);
+
+                        // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
                         if (this.progressingCount === this.exportCount) {
-                          console.log(true);
-                          console.log(true);
+                          this.exporting = false;
                           this.progress.done();
                         }
-                      }).catch(res => console.log(res));
+                      });
 
                   } else if (bundle.entry[key].resource.item[item].linkId === '3') {
 
@@ -891,22 +915,25 @@ export class HomeComponent implements OnInit {
                     );
 
                     // Zum überprüfen welche Daten in die Instrumenteninstanz gespeichert werden.
-                    console.log(fatigueQuestionnaireInstance);
-                    console.log(data3);
+                    // console.log(fatigueQuestionnaireInstance);
+                    // console.log(data3);
 
                     // Daten werden der zuständigen PHP-Datei übergeben, welche es in REDCap speichert.
                     this.http.post('http://localhost/dashboard/micap/redcap.fatigue.php', data3).toPromise()
                       .then(res => {
-                        console.log(res)
-                        this.progressingCount++;
-                        console.log(this.progressingCount);
-                        this.progressValue = this.progressValue + (100 / this.exportCount);
-                        if (this.progressingCount == this.exportCount) {
-                          console.log(true);
 
+                        // Überprüft ob der Fehler wegen dem REDCap-API-Token aufgetreten ist.
+                        if(res.text()=== '{"error":"You do not have permissions to use the API"}'){
+                          this.errorMessage = 'REDCap-API-Token ist inkorrekt!'
+                        }
+                        this.progressingCount++;
+
+                        // Falls die Exportnummer mit der berechneten Exportnummer übereinstimmt wird der Ladebalken beendet.
+                        if (this.progressingCount == this.exportCount) {
+                          this.exporting = false;
                           this.progress.done();
                         }
-                      }).catch(res => console.log(res));
+                      });
                   }
                 }
               }
