@@ -15,10 +15,12 @@ export class Dialog2Component implements OnInit {
   ngOnInit() {
   }
 
+  // Gibt den Token an die Komponente weiter welche dieses Dialog-Fenster aufruft.
   onCloseConfirm(token: string){
     this.thisDialogref.close([token, false]);
   }
 
+  // Gibt nichts an die Komponente weiter welche dieses Dialog-Fenster aufruft.
   onCloseCancel(){
     this.thisDialogref.close(['', true]);
   }

@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
   private exportCount: number;                              // Anzahl der zu exportierenden Daten
   private progressingCount: number = 0;                     // Zählz wie viele export gemacht wurden.
   private exporting: boolean = false;
-  private timer = Observable.interval(120000).subscribe(     // Timer welcher den Export nach einem gewissen Zeitinerval startet.
+  private timer = Observable.interval(120000).subscribe(    // Timer welcher den Export nach einem gewissen Zeitinerval startet.
     () => {
       if(!this.showHint && !this.exporting){
         this.pushToRedCap();
@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit {
             this.DataEntry = numberObservations + numberQuestionnaires;
 
             // Anzahl der nötigen Exports
-            this.exportCount = numberObservations + (numberQuestionnaires * 3) - 2;// -2 weil noch 2 probe durchläufe sind in der Studie!!!!!!!!!!!!!!!!!!!!!!
+            this.exportCount = numberObservations + (numberQuestionnaires * 3); // Mal 3 weil für jeden der 3 Fragebogen eine einzelne PHP-Datei ausgeführt wird.
             console.log(this.exportCount);
           });
       });

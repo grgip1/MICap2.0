@@ -15,7 +15,7 @@ export class DialogComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  // Bestätigt dass der Benutzer das Fenster gesehen hat.
   onCloseConfirm(){
     this.thisDialogref.close(true);
   }

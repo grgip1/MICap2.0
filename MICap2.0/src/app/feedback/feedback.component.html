@@ -1,22 +1,28 @@
 <div style="z-index: -1 !important;">
   <div class="header">
+    <!-- Der Name vom angemeldeten Bnutzer wird angezeigt. -->
     <p style="font-weight: bold;"> {{User}} </p>
+    <!-- Der Knopf führt die Funktion logout aus. -->
     <button id="logout" (click)="logout()">Abmelden</button>
   </div>
   <div style="max-width: 38%; text-align: center; margin: 0 auto;">
     <div>
-      <p style="font-weight: bold;">Anzahl der importierten Rückmeldungen:</p>
+      <p style="font-weight: bold;">Anzahl gesendeter Rückmeldungen:</p>
       <p class="showNumber">{{exportCount}}</p>
     </div>
     <div style="margin-bottom: 10px;">
       <p style="font-weight: bold; padding-top: 5px;">REDCap-API-Token:</p>
       <p class="apiToken"> {{REDCapToken}}</p>
+      <!-- Wird nur angezeigt wenn kein REDCap-API-Token angegeben wurde. -->
       <p *ngIf="showHint" style="color: red;">Bitte REDCapToken eingeben!</p>
       <div style="text-align: left;">
+        <!-- Übergibt den eingegeben REDCap-Token gleich weiter -->
         <input type="text" class="form-control" [(ngModel)]='REDCapToken' [ngModelOptions]="{standalone: true}">
       </div>
     </div>
+    <!-- Fehlermeldung falls der REDCap-API-Token inkorrekt ist. -->
     <label style="color: red;">{{errorMessage}}</label>
+        <!-- Der Knopf führt die Funktion getFeedback aus. -->
     <button (click)="getFeedback()" class="btn-submit" style="margin-top: 5px; margin-bottom: 5px;">Rückmeldung holen</button>
   </div>
 </div>
