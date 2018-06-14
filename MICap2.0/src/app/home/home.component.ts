@@ -32,9 +32,9 @@ export class HomeComponent implements OnInit {
   private errorMessage: string;                             // Fehlermeldung welche beim Login auftritt.
   private showHint: boolean = true;                         // Wird benutzt um zu entscheiden ob der Hint engezeigt werden soll.
   private exportCount: number;                              // Anzahl der zu exportierenden Daten
-  private progressingCount: number = 0;                     // Zählz wie viele export gemacht wurden.
-  private exporting: boolean = false;
-  private timer = Observable.interval(120000).subscribe(    // Timer welcher den Export nach einem gewissen Zeitinerval startet.
+  private progressingCount: number = 0;                     // Zählt wie viele export gemacht wurden.
+  private exporting: boolean = false;                       // Um zu wissen wann MICap 2.0 am exportieren ist.
+  private timer = Observable.interval(300000).subscribe(    // Timer welcher den Export alle 5 Minuten auslöst falss ein API-Token vorhanden ist und MICap 2.0 nicht am Exportiren ist.
     () => {
       if(!this.showHint && !this.exporting){
         this.pushToRedCap();
